@@ -80,6 +80,19 @@ class Venue(Base):
     # the pipeline itself ever writes.
     is_gold_standard: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
+    # ── Registry (v1.7) ──────────────────────────────────────────────────────
+    # external_ref is a stable slug (e.g. "intuit-dome") assigned at
+    # registration — see app/register_venues.py — and is what makes
+    # re-running registration idempotent (upsert by external_ref). NULL for
+    # the 6 hand-collected venues, same "NULL means hand-collected, never
+    # touched by the pipeline" convention transit_access.external_ref uses.
+    # source is "geocoded" for a registered venue's coordinates (Venue's own
+    # `confidence` column, added in migration 0012, carries the geocode
+    # precision label) — NULL for hand-collected venues, whose coordinates
+    # were never geocoded in the first place.
+    external_ref: Mapped[str | None] = mapped_column(String(100))
+    source: Mapped[str | None] = mapped_column(String(50))
+
     # Relationships
     parking_options: Mapped[list["ParkingOption"]] = relationship(
         back_populates="venue", cascade="all, delete-orphan"
