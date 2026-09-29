@@ -12,7 +12,8 @@ import {
 
 import { AIRPORTS, AirportStub } from '@/constants/airports';
 import { colors, radius, shadow, spacing } from '@/constants/theme';
-import { VENUES, VenueStub } from '@/constants/venues';
+import { VenueStub } from '@/constants/venues';
+import { useVenues } from '@/lib/useVenues';
 
 export type PickerItem = VenueStub | AirportStub;
 
@@ -24,12 +25,13 @@ interface Props {
   disabledNames?: string[];
 }
 
-const SECTIONS = [
-  { title: 'Airports', data: AIRPORTS as PickerItem[] },
-  { title: 'LA28 Venues', data: VENUES as PickerItem[] },
-];
-
 export function VenuePicker({ visible, onSelect, onClose, disabledIds = [], disabledNames = [] }: Props) {
+  const venues = useVenues();
+  const sections = [
+    { title: 'Airports', data: AIRPORTS as PickerItem[] },
+    { title: 'LA28 Venues', data: venues as PickerItem[] },
+  ];
+
   return (
     <Modal
       visible={visible}
@@ -51,7 +53,7 @@ export function VenuePicker({ visible, onSelect, onClose, disabledIds = [], disa
         </View>
 
         <SectionList
-          sections={SECTIONS}
+          sections={sections}
           keyExtractor={(item) => item.kind === 'airport' ? item.code : String(item.id)}
           contentContainerStyle={styles.list}
           renderSectionHeader={({ section }) => (

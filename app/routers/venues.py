@@ -40,6 +40,7 @@ import logging
 import re
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -55,6 +56,7 @@ from app.schemas import (
     ParkingOut,
     TransitOut,
     VenueDetailOut,
+    VenueListItemOut,
 )
 
 log = logging.getLogger(__name__)
@@ -144,6 +146,26 @@ def _strip_provenance(text: str | None) -> str | None:
     if cleaned.lower().rstrip(".") in _NO_DATA_PLACEHOLDERS:
         return None
     return cleaned or None
+
+
+@router.get("", response_model=list[VenueListItemOut])
+def list_venues(db: Session = Depends(get_db)):
+    """
+    Every venue with coordinates — just enough for a map pin or picker list.
+    Includes both the 6 hand-collected venues and any registered via
+    app/register_venues.py; no reviewed-status filtering here, since a
+    venue's own name/location isn't the kind of unverified content the
+    reviewed flag exists to gate (that's parking/transit/congestion detail,
+    served by GET /api/venues/{id}).
+    """
+    venues = db.execute(select(Venue).where(Venue.lat.is_not(None), Venue.lng.is_not(None))).scalars().all()
+    return [
+        VenueListItemOut(
+            id=v.id, name=v.name, sport_use=v.sport_use, zone=v.zone,
+            address=v.address, lat=_float(v.lat), lng=_float(v.lng),
+        )
+        for v in venues
+    ]
 
 
 @router.get("/{venue_id}", response_model=VenueDetailOut)

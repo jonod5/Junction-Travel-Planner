@@ -37,7 +37,6 @@ import {
   type TransitLayer,
   type VenueTransitPoint,
 } from '@/constants/venue-transit';
-import { VENUES } from '@/constants/venues';
 import { useAuth } from '@/lib/auth';
 import {
   api,
@@ -56,6 +55,7 @@ import i18next from '@/lib/i18n';
 import { clearPendingSave, readPendingSave, stashPendingSave } from '@/lib/pendingSave';
 import { decodePolyline, formatDistance, formatDuration } from '@/lib/polyline';
 import { ROUTE_MODES, useTrip } from '@/lib/store';
+import { useVenues } from '@/lib/useVenues';
 
 const MAPS_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY ?? '';
 
@@ -325,6 +325,7 @@ export default function UnifiedPlannerScreen() {
   const { user, account, loading: authLoading, isConfigured: authConfigured, signInWithGoogle } = useAuth();
   const router = useRouter();
   const { t, i18n } = useTranslation();
+  const venues = useVenues();
 
   // Below ~768px, floating side panels don't fit — the itinerary and venue
   // detail panels become one bottom sheet instead (see MOBILE_BREAKPOINT
@@ -659,7 +660,7 @@ export default function UnifiedPlannerScreen() {
     candidateMarkersRef.current.forEach((m) => m.setMap(null));
     candidateMarkersRef.current = [];
 
-    const candidates: SearchItem[] = [...VENUES, ...AIRPORTS].filter((item) => !addedNames.includes(item.name));
+    const candidates: SearchItem[] = [...venues, ...AIRPORTS].filter((item) => !addedNames.includes(item.name));
     candidates.forEach((item) => {
       const marker = new window.google.maps.Marker({
         position: { lat: item.lat, lng: item.lng },
@@ -677,7 +678,7 @@ export default function UnifiedPlannerScreen() {
       candidateMarkersRef.current = [];
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapReady, addedNames.join(',')]);
+  }, [mapReady, addedNames.join(','), venues]);
 
   // ── Static transit overlay (hand-collected zones — always-on fallback) ───
   // While a venue panel is open, its related points are shown regardless of
@@ -715,7 +716,7 @@ export default function UnifiedPlannerScreen() {
     let cancelled = false;
     setLiveLoading(true);
     setLiveError(null);
-    Promise.all(VENUES.map((v) => api.getMicromobility(v.lat, v.lng, 800).catch(() => null)))
+    Promise.all(venues.map((v) => api.getMicromobility(v.lat, v.lng, 800).catch(() => null)))
       .then((results) => {
         if (cancelled) return;
         const seen = new Set<string>();
@@ -736,7 +737,7 @@ export default function UnifiedPlannerScreen() {
       })
       .finally(() => { if (!cancelled) setLiveLoading(false); });
     return () => { cancelled = true; };
-  }, [liveEnabled]);
+  }, [liveEnabled, venues]);
 
   useEffect(() => {
     const map = mapRef.current;

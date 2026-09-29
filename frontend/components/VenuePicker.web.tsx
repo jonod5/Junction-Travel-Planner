@@ -10,7 +10,8 @@ import {
 
 import { AIRPORTS, AirportStub } from '@/constants/airports';
 import { colors, radius, shadow, spacing } from '@/constants/theme';
-import { VENUES, VenueStub } from '@/constants/venues';
+import { VenueStub } from '@/constants/venues';
+import { useVenues } from '@/lib/useVenues';
 
 export type PickerItem = VenueStub | AirportStub;
 
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function VenuePicker({ visible, onSelect, onClose, disabledIds = [], disabledNames = [] }: Props) {
+  const venues = useVenues();
   if (!visible) return null;
 
   return (
@@ -85,7 +87,7 @@ export function VenuePicker({ visible, onSelect, onClose, disabledIds = [], disa
 
           {/* ── LA28 Venues ───────────────────────────────────────────────── */}
           <Text style={[styles.sectionLabel, { marginTop: spacing.md }]}>LA28 Venues</Text>
-          {VENUES.map((item) => {
+          {venues.map((item) => {
             const disabled = disabledIds.includes(item.id);
             return (
               <Pressable

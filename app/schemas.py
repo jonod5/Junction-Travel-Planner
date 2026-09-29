@@ -178,6 +178,20 @@ class ReviewDecisionIn(BaseModel):
     reviewed_by: str | None = None
 
 
+class VenueListItemOut(BaseModel):
+    """GET /api/venues — just enough for a map pin / picker list. Full
+    parking/transit/congestion detail is GET /api/venues/{id}."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    sport_use: str | None
+    zone: str | None
+    address: str | None
+    lat: float | None
+    lng: float | None
+
+
 class GamesTimeOfficialOut(BaseModel):
     """Tier-3 scaffold — every field is null until LA28 publishes official
     data; `source` stays "official_pending" until then. See
