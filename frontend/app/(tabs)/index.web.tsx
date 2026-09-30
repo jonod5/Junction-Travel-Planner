@@ -63,6 +63,15 @@ const MAPS_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY ?? '';
 // bottom-sheet layout instead (see isMobile in the main component).
 const MOBILE_BREAKPOINT = 768;
 
+// Auto-create-trip retry policy — see the effect below. Bounded and backed
+// off deliberately: a naive "retry whenever trip is still null" effect
+// retries in a tight loop with zero delay whenever the backend is down or
+// rate-limiting, since a failed attempt's loading:false re-satisfies the
+// effect's own condition immediately. Caught live hammering the backend
+// ~470 times in under a second this way.
+const AUTO_CREATE_MAX_ATTEMPTS = 4;
+const AUTO_CREATE_BACKOFF_MS = [0, 1000, 2000, 4000];
+
 declare global {
   interface Window {
     google: typeof google;
@@ -401,11 +410,28 @@ export default function UnifiedPlannerScreen() {
   // Auto-create a session trip on first load — the unified flow doesn't ask
   // the traveler to name a trip; matches the PRD's first-open flow exactly
   // (destination → preferences → view trip, no naming step).
+  //
+  // Bounded + backed off (see AUTO_CREATE_* above): this effect re-runs
+  // every time `loading` flips back to false, which includes right after a
+  // FAILED attempt — so a naive version of this retries in a tight loop
+  // with no delay for as long as the backend stays unreachable. The ref
+  // tracks attempts across those re-runs without being a reactive
+  // dependency itself; after the last attempt, it just stops and leaves
+  // the existing error banner showing rather than hammering forever.
+  const autoCreateAttemptsRef = useRef(0);
   useEffect(() => {
-    if (!trip && !loading) {
+    if (trip || loading) return;
+    if (autoCreateAttemptsRef.current >= AUTO_CREATE_MAX_ATTEMPTS) return;
+
+    const attempt = autoCreateAttemptsRef.current;
+    autoCreateAttemptsRef.current += 1;
+    const delay = AUTO_CREATE_BACKOFF_MS[attempt] ?? AUTO_CREATE_BACKOFF_MS[AUTO_CREATE_BACKOFF_MS.length - 1];
+
+    const timer = setTimeout(() => {
       createTrip(t('planner.defaultTripName'));
-    }
-  }, [trip, loading, createTrip]);
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [trip, loading, createTrip, t]);
 
   // Resume a save that was interrupted by the sign-in redirect: a signed-out
   // "Save" tap stashes the in-progress plan to localStorage before calling

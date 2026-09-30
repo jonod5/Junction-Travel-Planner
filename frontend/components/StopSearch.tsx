@@ -79,8 +79,16 @@ export function StopSearch({ addedNames, onSelect, placeholder, onFocus }: Props
                 <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
                 <Text style={styles.sub} numberOfLines={1}>
                   {isVenue
-                    ? t(`venueData.sportUse.${item.id}`)
-                    : `${item.code} · ${t(`venueData.terminalInfo.${item.code}`)}`}
+                    // venueData.sportUse only has translated prose for the 6
+                    // hand-collected venues — i18next returns the raw key
+                    // string ("venueData.sportUse.10") for any id it doesn't
+                    // recognize, which is exactly what every pipeline-
+                    // registered venue hit. Falling back to the venue's own
+                    // (untranslated) sport_use — real data, not a missing-
+                    // translation placeholder — for everything outside that
+                    // table.
+                    ? t(`venueData.sportUse.${item.id}`, (item as VenueStub).sport_use)
+                    : `${item.code} · ${t(`venueData.terminalInfo.${item.code}`, (item as AirportStub).terminal_info)}`}
                 </Text>
               </View>
               <Feather name="plus-circle" size={16} color={colors.mutedFg} />
