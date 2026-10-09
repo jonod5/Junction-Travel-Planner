@@ -97,7 +97,7 @@ export function LearnMoreSections({ onJump, onSectionLayout, onOpenMap }: Props)
         <Text style={styles.eyebrow}>HOW IT WORKS</Text>
         <Text style={styles.h1}>PLAN HERE.{'\n'}RIDE ANYWHERE.</Text>
         <Text style={styles.lede}>
-          No spectator parking at LA28 venues. Junction finds your best car-free route, then opens the app to pay or book.
+          No spectator parking at Olympic venues. Junction finds your best car-free route, then opens the app to pay or book.
         </Text>
       </Reveal>
 

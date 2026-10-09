@@ -10,7 +10,7 @@
     "next": "Suivant",
     "retry": "Réessayer",
     "delete": "Supprimer",
-    "gamesPolicy": "Aucun stationnement pour spectateurs sur les sites pendant les Jeux de LA28. Les visiteurs doivent utiliser les transports en commun, un stationnement relais autorisé ou un mode de transport actif.",
+    "gamesPolicy": "Aucun stationnement pour spectateurs sur les sites pendant les Jeux. Les visiteurs doivent utiliser les transports en commun, un stationnement relais autorisé ou un mode de transport actif.",
     "walk": "Marcher",
     "board": "Monter",
     "exit": "Descendre",
@@ -52,8 +52,8 @@
   },
 
   "planner": {
-    "title": "Planificateur LA28",
-    "defaultTripName": "Mon voyage LA28",
+    "title": "Planificateur de voyage",
+    "defaultTripName": "Mon voyage",
     "myItineraries": "Mes itinéraires",
     "legend": {
       "nearby": "À PROXIMITÉ",
@@ -212,7 +212,7 @@
       "dropoffAccessibility": "DÉPOSE-MINUTE ET ACCESSIBILITÉ"
     },
     "parking": {
-      "collapseTitle": "Stationnement (jours normaux uniquement — fermé aux spectateurs pendant LA28)",
+      "collapseTitle": "Stationnement (jours normaux uniquement — fermé aux spectateurs pendant les Jeux)",
       "lot": "Parking",
       "lots_one": "{{count}} parking",
       "lots_other": "{{count}} parkings"
@@ -260,8 +260,8 @@
       "running_other": "En direct · {{count}} véhicules en circulation",
       "none": "Aucun véhicule en direct sur cette ligne pour le moment"
     },
-    "discouragedNote": "Le stationnement du site est fermé aux spectateurs pendant les Jeux de LA28. Conduire n'est pas l'option recommandée.",
-    "footer": "Les durées sont des estimations en conditions normales. Une demande plus forte est à prévoir pendant les Jeux de LA28. Vérifiez toujours les horaires du Metro et des navettes le jour de l'événement."
+    "discouragedNote": "Le stationnement du site est fermé aux spectateurs pendant les Jeux. Conduire n'est pas l'option recommandée.",
+    "footer": "Les durées sont des estimations en conditions normales. Une demande plus forte est à prévoir pendant les Jeux. Vérifiez toujours les horaires du Metro et des navettes le jour de l'événement."
   },
 
   "venueData": {

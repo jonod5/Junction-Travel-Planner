@@ -33,7 +33,7 @@ from app.db import Base
 # Store here, NOT as a DB column; all venues share the same policy.
 # ---------------------------------------------------------------------------
 GAMES_TIME_PARKING_POLICY = (
-    "No spectator parking at venues during LA28 Games. "
+    "No spectator parking at venues during the Games. "
     "Attendees must use transit, sanctioned park-and-ride, or active transport."
 )
 

@@ -32,7 +32,7 @@ export default function BuilderScreen() {
     useTrip();
   const router = useRouter();
 
-  const [tripName, setTripName] = useState('My LA28 Trip');
+  const [tripName, setTripName] = useState('My Trip');
   const [creating, setCreating] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -66,7 +66,7 @@ export default function BuilderScreen() {
 
   const handleCreateTrip = async () => {
     setCreating(true);
-    const name = tripName.trim() || 'My LA28 Trip';
+    const name = tripName.trim() || 'My Trip';
     await createTrip(name);
     setCreating(false);
   };
@@ -163,7 +163,7 @@ export default function BuilderScreen() {
 
           <Text style={styles.emptyTitle}>PLAN YOUR{'\n'}OLYMPIC JOURNEY</Text>
           <Text style={styles.emptySubtitle}>
-            Build a custom itinerary across LA28 venues — add stops, get transit routes, and
+            Build a custom itinerary across Olympic venues — add stops, get transit routes, and
             navigate LA like a pro.
           </Text>
 
@@ -173,7 +173,7 @@ export default function BuilderScreen() {
               style={styles.input}
               value={tripName}
               onChangeText={setTripName}
-              placeholder="My LA28 Trip"
+              placeholder="My Trip"
               placeholderTextColor={colors.mutedFg}
               returnKeyType="done"
               accessibilityLabel="Trip name"

@@ -83,8 +83,8 @@ export function VenuePicker({ visible, onSelect, onClose, disabledIds = [], disa
             );
           })}
 
-          {/* ── LA28 Venues ───────────────────────────────────────────────── */}
-          <Text style={[styles.sectionLabel, { marginTop: spacing.md }]}>LA28 Venues</Text>
+          {/* ── Venues ───────────────────────────────────────────────────── */}
+          <Text style={[styles.sectionLabel, { marginTop: spacing.md }]}>Venues</Text>
           {VENUES.map((item) => {
             const disabled = disabledIds.includes(item.id);
             return (

@@ -50,8 +50,8 @@
   },
 
   "planner": {
-    "title": "LA28 行程规划",
-    "defaultTripName": "我的 LA28 行程",
+    "title": "行程规划",
+    "defaultTripName": "我的行程",
     "myItineraries": "我的行程",
     "legend": {
       "nearby": "附近",
@@ -208,7 +208,7 @@
       "dropoffAccessibility": "上下客点与无障碍设施"
     },
     "parking": {
-      "collapseTitle": "停车场（仅限平日——LA28期间不对观众开放）",
+      "collapseTitle": "停车场（仅限平日——赛事期间不对观众开放）",
       "lot": "停车场",
       "lots_other": "{{count}} 个停车场"
     },
@@ -254,8 +254,8 @@
       "running_other": "实时 · {{count}} 辆车正在运行",
       "none": "该线路目前没有实时运行的车辆"
     },
-    "discouragedNote": "LA28赛事期间，场馆停车场不对观众开放。不建议选择驾车前往。",
-    "footer": "以上时间为正常情况下的预估值。LA28赛事期间预计出行需求会更高，请务必查看地铁及赛事当天接驳车的时刻表。"
+    "discouragedNote": "赛事期间，场馆停车场不对观众开放。不建议选择驾车前往。",
+    "footer": "以上时间为正常情况下的预估值。赛事期间预计出行需求会更高，请务必查看地铁及赛事当天接驳车的时刻表。"
   },
 
   "venueData": {

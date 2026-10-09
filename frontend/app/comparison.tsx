@@ -130,7 +130,7 @@ export default function ComparisonScreen() {
           </Text>
         </View>
 
-        {/* LA28 policy banner */}
+        {/* Games policy banner */}
         <PolicyBanner text={t('common.gamesPolicy')} />
 
         <Text style={styles.sectionTitle}>{t('comparison.travelOptions')}</Text>

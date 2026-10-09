@@ -26,7 +26,7 @@ interface Props {
 
 const SECTIONS = [
   { title: 'Airports', data: AIRPORTS as PickerItem[] },
-  { title: 'LA28 Venues', data: VENUES as PickerItem[] },
+  { title: 'Venues', data: VENUES as PickerItem[] },
 ];
 
 export function VenuePicker({ visible, onSelect, onClose, disabledIds = [], disabledNames = [] }: Props) {

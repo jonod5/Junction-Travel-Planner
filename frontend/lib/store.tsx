@@ -248,7 +248,7 @@ export function TripProvider({ children }: { children: React.ReactNode }) {
       setHydrating(true);
       setError(null);
       try {
-        const newTrip = await api.createTrip('My LA28 Trip');
+        const newTrip = await api.createTrip('My Trip');
         setTrip(newTrip);
         setRouteOptions({});
         setSelectedOptionId({});

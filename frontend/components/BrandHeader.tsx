@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import JunctionLogo from '@/components/JunctionLogo';
-import { brand, colors, spacing } from '@/constants/theme';
+import { colors, spacing } from '@/constants/theme';
 
 export const CONTENT_MAX_WIDTH = 1120;
 
@@ -23,7 +23,6 @@ export function BrandHeader() {
         >
           <JunctionLogo size={32} />
           <Text style={styles.wordmark}>JUNCTION</Text>
-          <Text style={styles.tag}>LA28</Text>
         </Pressable>
       </View>
     </View>
@@ -51,15 +50,5 @@ const styles = StyleSheet.create({
     fontSize: 26,
     letterSpacing: 0.5,
     color: colors.foreground,
-  },
-  tag: {
-    fontFamily: 'Barlow_600SemiBold',
-    fontSize: 12,
-    color: '#FFFFFF',
-    backgroundColor: brand.violet,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
-    overflow: 'hidden',
   },
 });

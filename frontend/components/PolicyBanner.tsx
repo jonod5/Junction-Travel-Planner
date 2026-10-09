@@ -15,7 +15,7 @@ export function PolicyBanner({ text, compact = false }: Props) {
       <Text
         style={[styles.text, compact && styles.textCompact]}
         accessibilityRole="text"
-        accessibilityLabel={`LA28 policy: ${text}`}
+        accessibilityLabel={`Games policy: ${text}`}
       >
         {text}
       </Text>

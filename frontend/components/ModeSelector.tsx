@@ -38,7 +38,7 @@ export function ModeSelector({ value, onChange }: Props) {
             ]}
             accessibilityRole="radio"
             accessibilityState={{ checked: active }}
-            accessibilityLabel={`${m.label}${isDriving ? ' — discouraged during LA28 Games' : ''}`}
+            accessibilityLabel={`${m.label}${isDriving ? ' — discouraged during the Games' : ''}`}
           >
             <Feather
               name={m.icon}

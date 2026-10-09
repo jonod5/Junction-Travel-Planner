@@ -197,7 +197,7 @@ export default function RoutesScreen() {
                 <View style={styles.drivingWarn}>
                   <Feather name="alert-triangle" size={13} color={colors.drivingWarning} />
                   <Text style={styles.drivingWarnText}>
-                    Venue parking closed to spectators during LA28 Games
+                    Venue parking closed to spectators during the Games
                   </Text>
                 </View>
               )}

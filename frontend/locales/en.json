@@ -10,7 +10,7 @@
     "next": "Next",
     "retry": "Retry",
     "delete": "Delete",
-    "gamesPolicy": "No spectator parking at venues during LA28 Games. Attendees must use transit, sanctioned park-and-ride, or active transport.",
+    "gamesPolicy": "No spectator parking at venues during the Games. Attendees must use transit, sanctioned park-and-ride, or active transport.",
     "walk": "Walk",
     "board": "Board",
     "exit": "Exit",
@@ -52,8 +52,8 @@
   },
 
   "planner": {
-    "title": "LA28 Planner",
-    "defaultTripName": "My LA28 Trip",
+    "title": "Trip Planner",
+    "defaultTripName": "My Trip",
     "myItineraries": "My Itineraries",
     "legend": {
       "nearby": "NEARBY",
@@ -212,7 +212,7 @@
       "dropoffAccessibility": "DROP-OFF & ACCESSIBILITY"
     },
     "parking": {
-      "collapseTitle": "Parking (normal days only — closed to spectators during LA28)",
+      "collapseTitle": "Parking (normal days only — closed to spectators during the Games)",
       "lot": "Lot",
       "lots_one": "{{count}} lot",
       "lots_other": "{{count}} lots"
@@ -260,8 +260,8 @@
       "running_other": "Live · {{count}} vehicles running now",
       "none": "No live vehicles on this line right now"
     },
-    "discouragedNote": "Venue parking is closed to spectators during LA28 Games. Driving is not the recommended option.",
-    "footer": "Times are estimates under normal conditions. Expect higher demand during LA28 Games. Always check Metro and event-day shuttle schedules."
+    "discouragedNote": "Venue parking is closed to spectators during the Games. Driving is not the recommended option.",
+    "footer": "Times are estimates under normal conditions. Expect higher demand during the Games. Always check Metro and event-day shuttle schedules."
   },
 
   "venueData": {

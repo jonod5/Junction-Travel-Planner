@@ -10,7 +10,7 @@
     "next": "Siguiente",
     "retry": "Reintentar",
     "delete": "Eliminar",
-    "gamesPolicy": "No hay estacionamiento para espectadores en las sedes durante los Juegos de LA28. Los asistentes deben usar transporte público, estacionamiento autorizado con traslado, o transporte activo.",
+    "gamesPolicy": "No hay estacionamiento para espectadores en las sedes durante los Juegos. Los asistentes deben usar transporte público, estacionamiento autorizado con traslado, o transporte activo.",
     "walk": "Caminar",
     "board": "Abordar",
     "exit": "Bajar",
@@ -52,8 +52,8 @@
   },
 
   "planner": {
-    "title": "Planificador LA28",
-    "defaultTripName": "Mi viaje LA28",
+    "title": "Planificador de viajes",
+    "defaultTripName": "Mi viaje",
     "myItineraries": "Mis itinerarios",
     "legend": {
       "nearby": "CERCA",
@@ -212,7 +212,7 @@
       "dropoffAccessibility": "PUNTO DE BAJADA Y ACCESIBILIDAD"
     },
     "parking": {
-      "collapseTitle": "Estacionamiento (solo días normales — cerrado a espectadores durante LA28)",
+      "collapseTitle": "Estacionamiento (solo días normales — cerrado a espectadores durante los Juegos)",
       "lot": "Estacionamiento",
       "lots_one": "{{count}} estacionamiento",
       "lots_other": "{{count}} estacionamientos"
@@ -260,8 +260,8 @@
       "running_other": "En vivo · {{count}} vehículos en circulación",
       "none": "No hay vehículos en vivo en esta línea ahora mismo"
     },
-    "discouragedNote": "El estacionamiento de la sede está cerrado a espectadores durante los Juegos de LA28. Conducir no es la opción recomendada.",
-    "footer": "Los tiempos son estimados en condiciones normales. Se espera mayor demanda durante los Juegos de LA28. Consulta siempre los horarios de Metro y de los traslados del día del evento."
+    "discouragedNote": "El estacionamiento de la sede está cerrado a espectadores durante los Juegos. Conducir no es la opción recomendada.",
+    "footer": "Los tiempos son estimados en condiciones normales. Se espera mayor demanda durante los Juegos. Consulta siempre los horarios de Metro y de los traslados del día del evento."
   },
 
   "venueData": {

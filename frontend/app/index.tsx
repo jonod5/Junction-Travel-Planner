@@ -125,7 +125,7 @@ export default function LandingScreen() {
                 </FadeIn>
                 <FadeIn delay={120}>
                   <Text style={styles.lede}>
-                    Plan transit, bike, scooter and ride-hail trips to every LA28 venue.
+                    Plan transit, bike, scooter and ride-hail trips to every venue.
                   </Text>
                 </FadeIn>
                 <FadeIn delay={240}>
