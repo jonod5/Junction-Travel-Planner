@@ -21,7 +21,7 @@ export const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
   'zh-Hans': '简体中文',
 };
 
-const STORAGE_KEY = 'la28_language';
+const STORAGE_KEY = 'junction_language';
 
 function isSupported(value: string): value is SupportedLanguage {
   return (SUPPORTED_LANGUAGES as readonly string[]).includes(value);

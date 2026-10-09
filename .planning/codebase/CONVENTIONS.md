@@ -37,7 +37,7 @@ Every child table row in the venue schema carries:
 - `verified_by: str | None`
 - `data_gaps: str | None`
 
-This is a domain convention from the LA28 Venue Data Collection sheet — every fact must be traceable to a source.
+This is a domain convention from the Venue Data Collection sheet — every fact must be traceable to a source.
 
 ## Comments
 

@@ -1,5 +1,5 @@
 """
-Seed script v3 — six LA28 venues from Venue_Data_Collection.pdf/docx.
+Seed script v3 — six venues from Venue_Data_Collection.pdf/docx.
 
 USAGE (review before running):
     python -m app.seed_venues
@@ -1089,7 +1089,7 @@ VENUES: list[dict] = [
                     "available until 11:45 PM night before event. No cash accepted at the gate."
                 ),
                 pricing_basis=(
-                    "UCLA Football 11/8/2025 — not confirmed LA28 Olympic pricing"
+                    "UCLA Football 11/8/2025 — not confirmed Olympic pricing"
                 ),
                 has_surge_pricing=True,
                 surge_notes=(

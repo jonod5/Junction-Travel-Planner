@@ -32,7 +32,7 @@ numbers, everything else as text.
 
 ## Re-running ingest
 
-`python -m app.ingest_sp survey.csv --name "LA28 SP v1"` is **idempotent by
+`python -m app.ingest_sp survey.csv --name "Junction SP v1"` is **idempotent by
 name**: running it again with the same `--name` replaces that survey's
 tasks and alternatives with whatever is in the CSV this time — it does not
 duplicate or merge. If that survey already has recorded respondent
@@ -40,7 +40,7 @@ choices, the command refuses to proceed (since deleting the tasks would
 also delete those responses) unless you pass `--force`.
 
 ```
-python -m app.ingest_sp docs/sample_survey.csv --name "LA28 SP v1" \
+python -m app.ingest_sp docs/sample_survey.csv --name "Junction SP v1" \
     --description "Pilot stated-preference survey" \
     --tasks-per-respondent 4
 ```

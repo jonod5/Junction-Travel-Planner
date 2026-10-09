@@ -1,7 +1,7 @@
 """
 CSV ingest for the stated-preference (SP) survey pipeline.
 
-    python -m app.ingest_sp <survey.csv> --name "LA28 SP v1" \
+    python -m app.ingest_sp <survey.csv> --name "Junction SP v1" \
         [--description "..."] [--tasks-per-respondent 10] [--force]
 
 CSV format is documented in docs/sp_survey_csv_format.md — one row per

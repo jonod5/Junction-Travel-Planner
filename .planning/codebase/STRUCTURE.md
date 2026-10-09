@@ -5,7 +5,7 @@ _Last mapped: 2026-07-09_
 ## Directory Layout
 
 ```
-la28-trip-planner/
+Junction-Travel/
 ├── app/                        # Application source
 │   ├── main.py                 # FastAPI app, lifespan, router registration, /health
 │   ├── db.py                   # SQLAlchemy engine, SessionLocal, Base, get_db()

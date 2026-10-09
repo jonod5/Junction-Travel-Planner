@@ -1,4 +1,4 @@
-// Hand-verified transit + mobility data for all 6 LA28 venues.
+// Hand-verified transit + mobility data for all 6 venues.
 // Source: Venue_Data_Collection.pdf (UCLA SURP 2026, July 2026, field-verified).
 
 export type TransitLayer = 'rail' | 'bus' | 'bike' | 'scooter' | 'dropoff';

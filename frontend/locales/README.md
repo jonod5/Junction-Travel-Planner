@@ -7,7 +7,7 @@
 The Spanish, French, and Simplified Chinese translations in this directory are a solid first pass, not a verified final version. They have **not** been reviewed by a native speaker. Before this app is publicly launched:
 
 - Have a native speaker of each language review every string for accuracy, tone, and natural phrasing.
-- Pay particular attention to transit/logistics terminology (e.g. "TDM", "PUDO", "GBFS") and LA28-specific phrasing, which may not have a single standard translation.
+- Pay particular attention to transit/logistics terminology (e.g. "TDM", "PUDO", "GBFS") and Games-specific phrasing, which may not have a single standard translation.
 - Venue-specific content (parking, curb access, congestion notes) is translated separately — see `app/services/venue_translation.py` and the `venue_translation` table; those rows carry their own `reviewed` flag and need the same review pass.
 
 ## Adding a new key

@@ -1,10 +1,10 @@
 // ── Bluebell + twilight palette ────────────────────────────────────────────
-// Primary is back to Bluebell (the original LA28 brand blue), accented with
+// Primary is back to Bluebell (the original brand blue), accented with
 // an adjacent violet/purple — a blue -> indigo -> purple progression, with
 // warm gold and a green "eco" as the two functional counterpoints so the
 // whole scheme doesn't read as one temperature.
 export const brand = {
-  bluebell: '#2B6CB0',   // primary — the original LA28 blue
+  bluebell: '#2B6CB0',   // primary — the original blue
   indigo: '#6366F1',     // adjacent purple, one step toward violet from bluebell
   violet: '#9333EA',     // adjacent purple, one step further — secondary
   gold: '#F59E0B',       // warm counterpoint — Olympic gold

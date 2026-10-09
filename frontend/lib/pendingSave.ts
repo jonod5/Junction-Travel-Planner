@@ -4,7 +4,7 @@
 // planner checks for it once the user comes back signed in.
 import type { SavedPlanSnapshot } from './api';
 
-const KEY = 'la28_pending_save';
+const KEY = 'junction_pending_save';
 
 export interface PendingSave {
   name: string;

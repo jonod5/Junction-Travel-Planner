@@ -29,7 +29,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db import Base
 
 # ---------------------------------------------------------------------------
-# Program-level constant — applies equally to all LA28 venues.
+# Program-level constant — applies equally to all venues.
 # Store here, NOT as a DB column; all venues share the same policy.
 # ---------------------------------------------------------------------------
 GAMES_TIME_PARKING_POLICY = (
@@ -54,7 +54,7 @@ class Venue(Base):
     total_lots: Mapped[int | None] = mapped_column(Integer)
     capacity_text: Mapped[str | None] = mapped_column(Text)  # raw phrase from doc
 
-    # Venue-specific Games-time shuttle / park-and-ride logistics (LA28-specific)
+    # Venue-specific Games-time shuttle / park-and-ride logistics (Games-specific)
     games_time_access_notes: Mapped[str | None] = mapped_column(Text)
 
     # Collection metadata
@@ -98,7 +98,7 @@ class ParkingOption(Base):
     price_max: Mapped[Decimal | None] = mapped_column(Numeric(8, 2))
     # Full event-type / advance-vs-gate breakdown verbatim from doc
     price_notes: Mapped[str | None] = mapped_column(Text)
-    # Provenance caveat — e.g. "UCLA Football 11/8/2025 — not confirmed LA28 Olympic pricing"
+    # Provenance caveat — e.g. "UCLA Football 11/8/2025 — not confirmed Olympic pricing"
     pricing_basis: Mapped[str | None] = mapped_column(Text)
 
     has_surge_pricing: Mapped[bool | None] = mapped_column(Boolean)

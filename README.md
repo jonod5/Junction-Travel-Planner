@@ -1,4 +1,4 @@
-# Junction: LA28 Olympic Trip Planner
+# Junction: Olympic Trip Planner
 
 A transit-first, multi-modal trip-planning application for visitors to the 2028 Los Angeles Olympic and Paralympic Games — a Games planned to be effectively **car-free**, with no spectator parking at competition venues. The app helps a visitor who is unfamiliar with Los Angeles figure out how to reach each venue by public transit, walking, shared bikes and scooters, park-and-ride, and ride-hailing, and compares those options by travel time, cost, and number of transfers.
 

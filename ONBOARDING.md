@@ -1,4 +1,4 @@
-# Welcome to LA28 Trip Planner
+# Welcome to Junction Travel
 
 ## How We Use Claude
 
@@ -17,7 +17,7 @@ Top MCP Servers:
 ## Your Setup Checklist
 
 ### Codebases
-- [ ] la28-trip-planner — https://github.com/jonod5/la28-trip-planner
+- [ ] Junction-Travel — https://github.com/jonod5/Junction-Travel
 
 ### MCP Servers to Activate
 _None in use yet — check back as the team adds integrations._

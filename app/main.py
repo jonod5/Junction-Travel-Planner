@@ -66,8 +66,8 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(
-    title="LA28 Trip Planner API",
-    description="Multi-modal trip planning for LA28 Olympic venues",
+    title="Junction API",
+    description="Multi-modal trip planning for Olympic venues",
     version="0.1.0",
     lifespan=lifespan,
 )
@@ -111,4 +111,4 @@ def health():
 
 @app.get("/")
 def root():
-    return {"message": "LA28 Trip Planner API is running"}
+    return {"message": "Junction API is running"}
