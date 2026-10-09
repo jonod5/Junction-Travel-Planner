@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   // Explicit size: react-native-web ignores aspectRatio on <Image>.
-  screenshot: { width: 300, height: 300 * (1688 / 1000), borderRadius: 30 },
+  screenshot: { width: 300, height: 300 * (1684 / 1098), borderRadius: 30 },
 
   actions: {
     flexDirection: 'row',
