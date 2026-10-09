@@ -1,3 +1,15 @@
+name: la28-trip-planner
+# Pinned explicitly — Compose otherwise derives the project name from the
+# containing folder's basename, which decides the prefix on every
+# container/volume it creates (postgres_data becomes
+# `<project>_postgres_data`). Without this pin, renaming the project folder
+# would make `docker compose up` default to a NEW project name, spin up
+# brand-new empty containers, and silently orphan the existing
+# la28-trip-planner_postgres_data volume — i.e. look like the entire
+# database (all real venue data) had vanished, when it's actually still
+# sitting there unreferenced. Pinning keeps compose pointed at the same
+# containers/volumes no matter what the folder is renamed to.
+
 services:
 
   db:
