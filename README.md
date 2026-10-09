@@ -1,6 +1,6 @@
-# Junction: Olympic Trip Planner
+# Junction: LA Trip Planner
 
-A transit-first, multi-modal trip-planning application for visitors to the 2028 Los Angeles Olympic and Paralympic Games — a Games planned to be effectively **car-free**, with no spectator parking at competition venues. The app helps a visitor who is unfamiliar with Los Angeles figure out how to reach each venue by public transit, walking, shared bikes and scooters, park-and-ride, and ride-hailing, and compares those options by travel time, cost, and number of transfers.
+A transit-first, multi-modal trip-planning application for visitors to events in Los Angeles. The app helps a visitor who is unfamiliar with Los Angeles figure out how to reach each venue by public transit, walking, shared bikes and scooters, park-and-ride, and ride-hailing, and compares those options by travel time, cost, and number of transfers.
 
 Built as the engineering deliverable of a UCLA Samueli **Summer Undergraduate Research Program (SURP) 2026** project under Prof. Youngseo Kim (Civil & Environmental Engineering). The application also serves as the foundation for a second research purpose: a stated-preference (SP) travel-survey platform for studying traveler mode choice under car-free Games conditions.
 
