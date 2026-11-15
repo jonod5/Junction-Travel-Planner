@@ -28,12 +28,12 @@ Design choices:
 import hashlib
 import json
 import logging
-import os
 import re
 
 import httpx
 
 from app.cache import get_redis
+from app.config import maps_api_key
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class DirectionsError(Exception):
 
 
 def _api_key() -> str | None:
-    return os.environ.get("GOOGLE_MAPS_KEY") or os.environ.get("GOOGLE_MAPS_API_KEY")
+    return maps_api_key()
 
 
 def _cache_key(

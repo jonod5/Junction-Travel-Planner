@@ -110,3 +110,14 @@ def test_missing_key_is_a_500_without_calling_google(client, monkeypatch):
 def test_query_length_is_bounded(client):
     assert client.get("/api/places", params={"query": "x" * 201}).status_code == 422
     assert client.get("/api/places", params={"query": ""}).status_code == 422
+
+
+def test_older_key_name_is_honoured_too(client, monkeypatch):
+    # Audit MESS-01: places only read GOOGLE_MAPS_API_KEY while directions and
+    # geocoding also accepted GOOGLE_MAPS_KEY. All three share one accessor now.
+    monkeypatch.delenv("GOOGLE_MAPS_API_KEY", raising=False)
+    monkeypatch.setenv("GOOGLE_MAPS_KEY", "legacy-name")
+    upstream = _upstream()
+    with patch.object(places.httpx, "Client", return_value=upstream):
+        assert client.get("/api/places", params={"query": "union station"}).status_code == 200
+    assert upstream.__enter__.return_value.get.call_args.kwargs["params"]["key"] == "legacy-name"

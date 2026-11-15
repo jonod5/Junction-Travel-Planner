@@ -24,6 +24,7 @@ import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.cache import get_redis
+from app.config import maps_api_key
 from app.rate_limit import rate_limit
 
 log = logging.getLogger(__name__)
@@ -63,9 +64,9 @@ def search_places(
 ):
     """
     Proxy Google Places Text Search and return trimmed results.
-    The GOOGLE_MAPS_KEY env var is injected server-side; clients never see it.
+    The Maps key (app.config.maps_api_key) stays server-side; clients never see it.
     """
-    api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
+    api_key = maps_api_key()
     if not api_key:
         log.error("Maps API key is not configured")
         raise HTTPException(status_code=500, detail="Place search is temporarily unavailable")
