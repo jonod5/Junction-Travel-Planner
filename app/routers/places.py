@@ -3,31 +3,59 @@ GET /api/places?query=  — server-side proxy to Google Places Text Search.
 
 Design choices:
 - The Google Maps key lives exclusively in the server environment; the client
-  never sees it.  This also lets us add rate limiting and caching in one place
-  without any client changes.
+  never sees it.
 - We return only (name, address) — the minimum the frontend needs for
   autocomplete / display.  This reduces payload size and avoids leaking
   internal Place IDs that clients could use to bypass the proxy.
 - httpx is used synchronously here; swap to AsyncClient + async def if the
   rest of the app goes async.
-- TODO: add a Redis cache with a short TTL (e.g. 5 min) per query string to
-  stay within the Places API free tier.  The stub comment below marks where.
-- TODO: add a rate-limit middleware (e.g. slowapi) before exposing publicly.
+- Every upstream call is billed, so the route has its own strict per-client
+  rate limit (like /api/directions) and a short Redis cache per normalized
+  query. The cache fails open: a Redis problem costs an upstream call, it
+  never fails the request.
 """
 
+import hashlib
+import json
 import logging
 import os
 
 import httpx
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+
+from app.cache import get_redis
+from app.rate_limit import rate_limit
 
 log = logging.getLogger(__name__)
 router = APIRouter()
 
 PLACES_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json"
+CACHE_TTL = 300  # 5 minutes — place search results for a given text are stable
+PLACES_RATE_LIMIT = int(os.environ.get("RATE_LIMIT_PLACES_PER_MIN", "10"))
 
 
-@router.get("/api/places")
+def _cache_key(query: str) -> str:
+    normalized = " ".join(query.lower().split())
+    return "places:" + hashlib.md5(normalized.encode()).hexdigest()  # noqa: S324 — not crypto
+
+
+def _cache_get(key: str) -> dict | None:
+    try:
+        cached = get_redis().get(key)
+    except Exception:  # noqa: BLE001 — cache is best-effort
+        log.warning("Places cache read failed — falling through to the API")
+        return None
+    return json.loads(cached) if cached else None
+
+
+def _cache_set(key: str, value: dict) -> None:
+    try:
+        get_redis().setex(key, CACHE_TTL, json.dumps(value))
+    except Exception:  # noqa: BLE001 — cache is best-effort
+        log.warning("Places cache write failed")
+
+
+@router.get("/api/places", dependencies=[Depends(rate_limit("places", PLACES_RATE_LIMIT, 60))])
 def search_places(
     query: str = Query(
         ..., min_length=1, max_length=200, description="Free-text search query"
@@ -41,8 +69,10 @@ def search_places(
     if not api_key:
         raise HTTPException(status_code=500, detail="Maps API key not configured")
 
-    # TODO: check Redis cache here before making the upstream call.
-    # cache_key = f"places:{query}"
+    cache_key = _cache_key(query)
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return cached
 
     params = {
         "query": query,
@@ -77,6 +107,6 @@ def search_places(
         for r in data.get("results", [])
     ]
 
-    # TODO: write results to Redis cache here with a short TTL.
-
-    return {"query": query, "count": len(results), "results": results}
+    payload = {"query": query, "count": len(results), "results": results}
+    _cache_set(cache_key, payload)
+    return payload
