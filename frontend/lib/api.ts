@@ -36,9 +36,33 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   const res = await fetch(`${getBaseUrl()}${path}`, { ...options, headers });
   if (res.status === 204) return undefined as T;
-  const body = await res.json();
-  if (!res.ok) throw new Error(body?.detail ?? `HTTP ${res.status}`);
+  // The body isn't always JSON: a proxy or host error page (502/504 from
+  // Vercel or Railway) is HTML, and parsing it used to surface to the user
+  // as a raw "Unexpected token '<'" SyntaxError.
+  let body: unknown = null;
+  try {
+    body = await res.json();
+  } catch {
+    body = null;
+  }
+  if (!res.ok) throw new Error(errorMessage(body, res.status));
+  if (body === null) throw new Error(`HTTP ${res.status}`);
   return body as T;
+}
+
+/** A readable message from a FastAPI error body. `detail` is a string for
+ *  HTTPException, but a list of {loc, msg} objects for a 422 validation
+ *  error — which used to render as "[object Object]". */
+function errorMessage(body: unknown, status: number): string {
+  const detail = (body as { detail?: unknown } | null)?.detail;
+  if (typeof detail === 'string' && detail) return detail;
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((d) => (d && typeof d === 'object' && typeof (d as { msg?: unknown }).msg === 'string' ? (d as { msg: string }).msg : null))
+      .filter((m): m is string => Boolean(m));
+    if (messages.length > 0) return messages.join('; ');
+  }
+  return `HTTP ${status}`;
 }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
