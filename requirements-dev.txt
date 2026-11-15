@@ -4,4 +4,3 @@
 
 ruff
 pytest
-pytest-asyncio

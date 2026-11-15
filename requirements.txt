@@ -20,9 +20,6 @@ anthropic
 # GTFS-Realtime protobuf parsing (Swiftly live vehicle positions)
 gtfs-realtime-bindings
 
-# Retry helper for DB startup wait (used in main.py lifespan)
-tenacity
-
 # Supabase JWT verification (JWKS/RS256 + HS256 shared-secret fallback).
 # Floor: releases before 2.15.0 carry JWKS-handling and algorithm-confusion
 # advisories (pip-audit, 2026-11).
