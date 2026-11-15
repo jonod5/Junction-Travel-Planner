@@ -142,7 +142,8 @@ def parse_csv(path: str) -> tuple[dict[str, list[ParsedAlternative]], list[str]]
         block_ids = {a.block_id for a in alts}
         if len(block_ids) > 1:
             errors.append(
-                f"Task '{task_code}' has inconsistent block_id across its rows: {sorted(b or '(none)' for b in block_ids)}",
+                f"Task '{task_code}' has inconsistent block_id across its rows: "
+                f"{sorted(b or '(none)' for b in block_ids)}",
             )
 
     return tasks, errors

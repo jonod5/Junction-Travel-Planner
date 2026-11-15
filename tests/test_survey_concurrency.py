@@ -16,7 +16,6 @@ import tempfile  # noqa: E402
 import threading  # noqa: E402
 from datetime import datetime, timezone  # noqa: E402
 
-import pytest  # noqa: E402
 from fastapi import HTTPException  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
