@@ -12,8 +12,8 @@ from fastapi import HTTPException  # noqa: E402
 
 from app import main  # noqa: E402
 from app import rate_limit as rl  # noqa: E402
-from app.routers import directions, places, survey  # noqa: E402
-from app.services import route_engine  # noqa: E402
+from app.routers import places, survey  # noqa: E402
+from app.services import directions, route_engine  # noqa: E402
 
 
 # ── SEC-14 ───────────────────────────────────────────────────────────────────

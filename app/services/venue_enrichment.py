@@ -59,7 +59,7 @@ from app.ingest.gbfs import haversine_m
 from app.ingest.osm import nearby_context, summarize_context
 from app.models.gtfs import GtfsRoute, GtfsStop, GtfsStopTime, GtfsTrip
 from app.models.venue import TransitAccess, Venue, VenueExtraction
-from app.routers.directions import DirectionsError, fetch_directions
+from app.services.directions import DirectionsError, fetch_directions
 from app.services.fares import rideshare_estimate
 
 log = logging.getLogger(__name__)

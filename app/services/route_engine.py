@@ -59,7 +59,7 @@ import re
 
 from app.data import metro_micro
 from app.ingest import gbfs
-from app.routers.directions import DirectionsError, _api_key, fetch_directions
+from app.services.directions import DirectionsError, _api_key, fetch_directions
 from app.services import fares
 
 log = logging.getLogger(__name__)
@@ -458,7 +458,7 @@ def optimize(
 
     `language` is an app locale code, forwarded to every Directions call so
     each candidate's turn-by-turn `steps[].instruction` come back in the
-    caller's language (see app.routers.directions.fetch_directions).
+    caller's language (see app.services.directions.fetch_directions).
     """
     # A missing Maps key is a server misconfiguration, not a per-candidate miss.
     if not _api_key():

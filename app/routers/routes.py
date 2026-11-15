@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.rate_limit import rate_limit
-from app.routers.directions import DirectionsError
+from app.services.directions import DirectionsError
 from app.services import route_engine
 
 log = logging.getLogger(__name__)
@@ -45,7 +45,7 @@ class RouteOptimizeRequest(BaseModel):
     departure_time: int | None = Field(None, ge=0, le=4_102_444_800)
     # App locale code (see frontend/lib/i18n.ts); forwarded to Google so
     # turn-by-turn steps come back in the caller's language. Unsupported or
-    # missing falls back to English (app.routers.directions._normalize_language).
+    # missing falls back to English (app.services.directions._normalize_language).
     language: str | None = Field(None, max_length=10)
 
 

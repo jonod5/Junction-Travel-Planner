@@ -264,7 +264,7 @@ class TestEnrichVenue:
             enrich_venue(db, venue)
 
     def test_falls_back_to_haversine_when_directions_unavailable(self, db, _mock_external_calls):
-        from app.routers.directions import DirectionsError
+        from app.services.directions import DirectionsError
 
         _mock_external_calls["directions"].side_effect = DirectionsError("no key configured", status_code=500)
         venue = self._seed_venue_and_stop(db)

@@ -15,7 +15,7 @@ Directions and GBFS are stubbed so these run offline and are fully controlled.
 
 import pytest
 
-from app.routers.directions import DirectionsError
+from app.services.directions import DirectionsError
 from app.services import route_engine
 
 # Coordinates well outside any Metro Micro zone (central LA).
