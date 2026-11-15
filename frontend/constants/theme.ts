@@ -41,14 +41,6 @@ export const colors = {
   drivingWarning: '#DC2626',
 } as const;
 
-// Blue -> indigo -> violet sweep — the primary/accent/secondary progression
-// as one continuous "twilight" ramp, gold as a warm cap at the end.
-export const gradients = {
-  twilight: [brand.bluebell, brand.indigo, brand.violet, brand.gold] as [
-    string, string, string, string,
-  ],
-} as const;
-
 export const spacing = {
   xs: 4,
   sm: 8,
