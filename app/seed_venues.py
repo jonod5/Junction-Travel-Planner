@@ -22,6 +22,7 @@ from sqlalchemy.orm import Session
 from app.models.venue import (
     CongestionTdm,
     CurbDropoff,
+    GamesTimeOfficial,
     ParkingOption,
     TransitAccess,
     Venue,
@@ -1232,24 +1233,39 @@ VENUES: list[dict] = [
 # ---------------------------------------------------------------------------
 
 def seed(session: Session) -> None:
+    # This is hand-collected, human-verified data (see FIDELITY RULES above)
+    # — the gold standard the automated pipeline (v1.7) is validated
+    # against, not something it ever wrote. reviewed=True here mirrors the
+    # backfill migrations 0012/0013 run against the already-seeded
+    # production DB; without it, a *fresh* reseed would leave every row at
+    # its pipeline-oriented reviewed=False default and the API's "never
+    # show unreviewed data as fact" filter would hide all of it.
+    # is_gold_standard=True (migration 0014's backfill, mirrored here for
+    # the same "fresh reseed" reason) is what app/validate_pipeline.py
+    # checks the pipeline's output against.
     for entry in VENUES:
-        v = Venue(**entry["venue"])
+        v = Venue(**entry["venue"], reviewed=True, is_gold_standard=True)
         session.add(v)
         session.flush()  # populate v.id before child inserts
 
         for p in entry.get("parking", []):
-            session.add(ParkingOption(venue_id=v.id, **p))
+            session.add(ParkingOption(venue_id=v.id, reviewed=True, **p))
 
         c = entry.get("curb")
         if c:
-            session.add(CurbDropoff(venue_id=v.id, **c))
+            session.add(CurbDropoff(venue_id=v.id, reviewed=True, **c))
 
         for t in entry.get("transit", []):
-            session.add(TransitAccess(venue_id=v.id, **t))
+            session.add(TransitAccess(venue_id=v.id, reviewed=True, **t))
 
         cong = entry.get("congestion")
         if cong:
-            session.add(CongestionTdm(venue_id=v.id, **cong))
+            session.add(CongestionTdm(venue_id=v.id, reviewed=True, **cong))
+
+        # Tier-3 scaffold — no official LA28 data exists yet for any venue;
+        # this row just makes that state visible rather than absent. See
+        # GamesTimeOfficial's docstring in app/models/venue.py.
+        session.add(GamesTimeOfficial(venue_id=v.id))
 
         for s in entry.get("sources", []):
             session.add(VenueSource(venue_id=v.id, **s))

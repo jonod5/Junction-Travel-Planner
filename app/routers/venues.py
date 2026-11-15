@@ -40,6 +40,7 @@ import logging
 import re
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -51,9 +52,11 @@ from app.models.venue import (
 from app.schemas import (
     CongestionOut,
     CurbOut,
+    GamesTimeOfficialOut,
     ParkingOut,
     TransitOut,
     VenueDetailOut,
+    VenueListItemOut,
 )
 
 log = logging.getLogger(__name__)
@@ -145,6 +148,31 @@ def _strip_provenance(text: str | None) -> str | None:
     return cleaned or None
 
 
+@router.get("", response_model=list[VenueListItemOut])
+def list_venues(db: Session = Depends(get_db)):
+    """
+    Every *listed* venue with coordinates — just enough for a map pin or
+    picker list. Covers both the 6 hand-collected venues and any registered
+    via app/register_venues.py, minus those flagged listed=False (out of the
+    LA Metro-served scope — see Venue.listed). Hidden venues are not deleted:
+    GET /api/venues/{id} still serves them, so saved itineraries and the
+    enrichment/review pipeline keep working. No reviewed-status filtering
+    here, since a venue's own name/location isn't the kind of unverified
+    content the reviewed flag exists to gate (that's parking/transit/
+    congestion detail, served by GET /api/venues/{id}).
+    """
+    venues = db.execute(
+        select(Venue).where(Venue.listed.is_(True), Venue.lat.is_not(None), Venue.lng.is_not(None))
+    ).scalars().all()
+    return [
+        VenueListItemOut(
+            id=v.id, name=v.name, sport_use=v.sport_use, zone=v.zone,
+            address=v.address, lat=_float(v.lat), lng=_float(v.lng),
+        )
+        for v in venues
+    ]
+
+
 @router.get("/{venue_id}", response_model=VenueDetailOut)
 def get_venue(
     venue_id: int,
@@ -179,7 +207,12 @@ def get_venue(
             is_closest_to_entrance=p.is_closest_to_entrance,
             notes=tr("parking_option", p.id, "notes", _strip_provenance(p.notes)),
         )
-        for p in venue.parking_options
+        # Never present unreviewed data as fact — see the same filter on
+        # `transit` below. A no-op today (hand-collected rows were
+        # backfilled reviewed=True in migration 0013; Tier-2 approvals set
+        # reviewed=True the moment they touch a row), but load-bearing the
+        # instant anything writes reviewed=False here.
+        for p in venue.parking_options if p.reviewed
     ]
 
     transit = [
@@ -196,8 +229,14 @@ def get_venue(
                 "transit_access", t.id, "gbfs_dock_description", _strip_provenance(t.gbfs_dock_description),
             ),
             transit_notes=tr("transit_access", t.id, "transit_notes", _strip_provenance(t.transit_notes)),
+            rideshare_estimate_usd=_float(t.rideshare_estimate_usd),
         )
-        for t in venue.transit_accesses
+        # Never present unreviewed data as fact (project-wide rule — see
+        # app/services/venue_enrichment.py). Every row today is reviewed
+        # (hand-collected rows were backfilled in migration 0012; Tier-1
+        # enrichment writes reviewed=True immediately); this filter is a
+        # no-op until Tier-2 extraction starts writing reviewed=False rows.
+        for t in venue.transit_accesses if t.reviewed
     ]
 
     curb = [
@@ -222,11 +261,11 @@ def get_venue(
                 "curb_dropoff", c.id, "curbside_restrictions", _strip_provenance(c.curbside_restrictions),
             ),
         )
-        for c in venue.curb_dropoffs
+        for c in venue.curb_dropoffs if c.reviewed
     ]
 
     cong: CongestionOut | None = None
-    if venue.congestion_tdm:
+    if venue.congestion_tdm and venue.congestion_tdm.reviewed:
         td = venue.congestion_tdm
         cong = CongestionOut(
             id=td.id,
@@ -244,6 +283,20 @@ def get_venue(
             general_tdm_notes=tr(
                 "congestion_tdm", td.id, "general_tdm_notes", _strip_provenance(td.general_tdm_notes),
             ),
+        )
+
+    # Tier-3 scaffold — always present once seeded, always empty until LA28
+    # publishes official data. Not translated: every field is None or the
+    # literal source flag, nothing to translate yet.
+    official: GamesTimeOfficialOut | None = None
+    if venue.games_time_official:
+        go = venue.games_time_official
+        official = GamesTimeOfficialOut(
+            car_restricted_zones=go.car_restricted_zones,
+            designated_pudo=go.designated_pudo,
+            shuttles=go.shuttles,
+            arrival_windows=go.arrival_windows,
+            source=go.source,
         )
 
     return VenueDetailOut(
@@ -266,4 +319,5 @@ def get_venue(
         transit_accesses=transit,
         curb_dropoffs=curb,
         congestion_tdm=cong,
+        games_time_official=official,
     )

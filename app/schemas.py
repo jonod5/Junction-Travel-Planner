@@ -119,6 +119,10 @@ class TransitOut(BaseModel):
     bike_lane_nearby: bool | None
     gbfs_dock_description: str | None
     transit_notes: str | None
+    # Modeled ride-hail cost for the same trip, from the Tier-1 enrichment
+    # pipeline (see app/services/venue_enrichment.py) — None for
+    # hand-collected rows, which never computed one.
+    rideshare_estimate_usd: float | None
 
 
 class CurbOut(BaseModel):
@@ -145,6 +149,62 @@ class CongestionOut(BaseModel):
     general_tdm_notes: str | None
 
 
+class VenueExtractionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    venue_id: int
+    entity_type: str
+    entity_id: int | None
+    field_name: str
+    extracted_value: str
+    # Set only for a "pending_change" draft — the value this one proposes
+    # to replace. None for a brand-new field ("pending").
+    previous_value: str | None
+    source_url: str | None
+    source_quote: str | None
+    confidence: float | None
+    status: str
+    corrected_value: str | None
+    created_at: datetime
+    reviewed_at: datetime | None
+    reviewed_by: str | None
+
+
+class ReviewDecisionIn(BaseModel):
+    """Body for POST /api/venues/review-queue/{id}/decision."""
+    decision: str  # "approve" | "edit" | "reject"
+    corrected_value: str | None = None
+    reviewed_by: str | None = None
+
+
+class VenueListItemOut(BaseModel):
+    """GET /api/venues — just enough for a map pin / picker list. Full
+    parking/transit/congestion detail is GET /api/venues/{id}."""
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    sport_use: str | None
+    zone: str | None
+    address: str | None
+    lat: float | None
+    lng: float | None
+
+
+class GamesTimeOfficialOut(BaseModel):
+    """Tier-3 scaffold — every field is null until LA28 publishes official
+    data; `source` stays "official_pending" until then. See
+    GamesTimeOfficial's docstring in app/models/venue.py."""
+    model_config = ConfigDict(from_attributes=True)
+
+    car_restricted_zones: str | None
+    designated_pudo: str | None
+    shuttles: str | None
+    arrival_windows: str | None
+    source: str
+
+
 class VenueDetailOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -165,3 +225,4 @@ class VenueDetailOut(BaseModel):
     transit_accesses: list[TransitOut] = []
     curb_dropoffs: list[CurbOut] = []
     congestion_tdm: CongestionOut | None = None
+    games_time_official: GamesTimeOfficialOut | None = None

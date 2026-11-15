@@ -134,6 +134,16 @@ export interface CongestionTdm {
   general_tdm_notes: string | null;
 }
 
+export interface VenueListItem {
+  id: number;
+  name: string;
+  sport_use: string | null;
+  zone: string | null;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+}
+
 export interface VenueDetail {
   id: number;
   name: string;
@@ -427,6 +437,8 @@ export const api = {
 
   getVenue: (id: number, language?: string) =>
     request<VenueDetail>(`/api/venues/${id}${language ? `?language=${encodeURIComponent(language)}` : ''}`),
+
+  listVenues: () => request<VenueListItem[]>('/api/venues'),
 
   getMicromobility: (lat: number, lng: number, radiusM = 800) =>
     request<MicromobilityResult>(

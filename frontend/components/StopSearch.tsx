@@ -5,7 +5,8 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 
 import { AIRPORTS, AirportStub } from '@/constants/airports';
 import { colors, radius, shadow, spacing } from '@/constants/theme';
-import { VENUES, VenueStub } from '@/constants/venues';
+import { VenueStub } from '@/constants/venues';
+import { useVenues } from '@/lib/useVenues';
 
 export type SearchItem = VenueStub | AirportStub;
 
@@ -19,21 +20,22 @@ interface Props {
   onFocus?: () => void;
 }
 
-/** Type-ahead search across the 6 venues + 5 airports (FR-U2). */
+/** Type-ahead search across every registered venue + 5 airports (FR-U2). */
 export function StopSearch({ addedNames, onSelect, placeholder, onFocus }: Props) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
+  const venues = useVenues();
 
   const results = useMemo<SearchItem[]>(() => {
     const q = query.trim().toLowerCase();
-    const all: SearchItem[] = [...VENUES, ...AIRPORTS];
+    const all: SearchItem[] = [...venues, ...AIRPORTS];
     const notAdded = all.filter((item) => !addedNames.includes(item.name));
     if (!q) return notAdded;
     return notAdded.filter((item) => {
       const haystack = item.kind === 'airport' ? `${item.name} ${item.code}` : item.name;
       return haystack.toLowerCase().includes(q);
     });
-  }, [query, addedNames]);
+  }, [query, addedNames, venues]);
 
   return (
     <View style={styles.wrap}>
@@ -77,8 +79,16 @@ export function StopSearch({ addedNames, onSelect, placeholder, onFocus }: Props
                 <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
                 <Text style={styles.sub} numberOfLines={1}>
                   {isVenue
-                    ? t(`venueData.sportUse.${item.id}`)
-                    : `${item.code} · ${t(`venueData.terminalInfo.${item.code}`)}`}
+                    // venueData.sportUse only has translated prose for the 6
+                    // hand-collected venues — i18next returns the raw key
+                    // string ("venueData.sportUse.10") for any id it doesn't
+                    // recognize, which is exactly what every pipeline-
+                    // registered venue hit. Falling back to the venue's own
+                    // (untranslated) sport_use — real data, not a missing-
+                    // translation placeholder — for everything outside that
+                    // table.
+                    ? t(`venueData.sportUse.${item.id}`, (item as VenueStub).sport_use)
+                    : `${item.code} · ${t(`venueData.terminalInfo.${item.code}`, (item as AirportStub).terminal_info)}`}
                 </Text>
               </View>
               <Feather name="plus-circle" size={16} color={colors.mutedFg} />

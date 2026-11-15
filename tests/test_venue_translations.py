@@ -28,6 +28,7 @@ from app.db import Base, get_db  # noqa: E402
 from app.models.venue import (  # noqa: E402
     CongestionTdm,
     CurbDropoff,
+    GamesTimeOfficial,
     ParkingOption,
     TransitAccess,
     Venue,
@@ -43,7 +44,7 @@ def client():
         engine,
         tables=[
             Venue.__table__, ParkingOption.__table__, CongestionTdm.__table__,
-            TransitAccess.__table__, CurbDropoff.__table__, VenueTranslation.__table__,
+            TransitAccess.__table__, CurbDropoff.__table__, VenueTranslation.__table__, GamesTimeOfficial.__table__,
         ],
     )
     TestSessionLocal = sessionmaker(bind=engine)
@@ -60,8 +61,10 @@ def client():
     v2 = Venue(id=2, name="Other Arena", capacity_text="100 spaces available")
     seed.add_all([v1, v2])
     seed.flush()
-    seed.add(ParkingOption(id=1, venue_id=1, lot_name="Blue Lot", notes="Closest to the main gate.", source="test"))
-    seed.add(CongestionTdm(id=1, venue_id=1, arrival_notes="Arrive 2 hours early."))
+    seed.add(ParkingOption(
+        id=1, venue_id=1, lot_name="Blue Lot", notes="Closest to the main gate.", source="test", reviewed=True,
+    ))
+    seed.add(CongestionTdm(id=1, venue_id=1, arrival_notes="Arrive 2 hours early.", reviewed=True))
     seed.add(VenueTranslation(
         venue_id=1, entity_type="venue", entity_id=1, field="capacity_text",
         language="es", value="100 espacios disponibles",

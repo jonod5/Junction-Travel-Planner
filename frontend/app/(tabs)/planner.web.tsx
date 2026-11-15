@@ -37,7 +37,6 @@ import {
   type TransitLayer,
   type VenueTransitPoint,
 } from '@/constants/venue-transit';
-import { VENUES } from '@/constants/venues';
 import { useAuth } from '@/lib/auth';
 import {
   api,
@@ -56,12 +55,22 @@ import i18next from '@/lib/i18n';
 import { clearPendingSave, readPendingSave, stashPendingSave } from '@/lib/pendingSave';
 import { decodePolyline, formatDistance, formatDuration } from '@/lib/polyline';
 import { ROUTE_MODES, useTrip } from '@/lib/store';
+import { useVenues } from '@/lib/useVenues';
 
 const MAPS_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_KEY ?? '';
 
 // Below this width, floating side panels don't fit — switch to the mobile
 // bottom-sheet layout instead (see isMobile in the main component).
 const MOBILE_BREAKPOINT = 768;
+
+// Auto-create-trip retry policy — see the effect below. Bounded and backed
+// off deliberately: a naive "retry whenever trip is still null" effect
+// retries in a tight loop with zero delay whenever the backend is down or
+// rate-limiting, since a failed attempt's loading:false re-satisfies the
+// effect's own condition immediately. Caught live hammering the backend
+// ~470 times in under a second this way.
+const AUTO_CREATE_MAX_ATTEMPTS = 4;
+const AUTO_CREATE_BACKOFF_MS = [0, 1000, 2000, 4000];
 
 declare global {
   interface Window {
@@ -325,6 +334,7 @@ export default function UnifiedPlannerScreen() {
   const { user, account, loading: authLoading, isConfigured: authConfigured, signInWithGoogle } = useAuth();
   const router = useRouter();
   const { t, i18n } = useTranslation();
+  const venues = useVenues();
 
   // Below ~768px, floating side panels don't fit — the itinerary and venue
   // detail panels become one bottom sheet instead (see MOBILE_BREAKPOINT
@@ -400,11 +410,28 @@ export default function UnifiedPlannerScreen() {
   // Auto-create a session trip on first load — the unified flow doesn't ask
   // the traveler to name a trip; matches the PRD's first-open flow exactly
   // (destination → preferences → view trip, no naming step).
+  //
+  // Bounded + backed off (see AUTO_CREATE_* above): this effect re-runs
+  // every time `loading` flips back to false, which includes right after a
+  // FAILED attempt — so a naive version of this retries in a tight loop
+  // with no delay for as long as the backend stays unreachable. The ref
+  // tracks attempts across those re-runs without being a reactive
+  // dependency itself; after the last attempt, it just stops and leaves
+  // the existing error banner showing rather than hammering forever.
+  const autoCreateAttemptsRef = useRef(0);
   useEffect(() => {
-    if (!trip && !loading) {
+    if (trip || loading) return;
+    if (autoCreateAttemptsRef.current >= AUTO_CREATE_MAX_ATTEMPTS) return;
+
+    const attempt = autoCreateAttemptsRef.current;
+    autoCreateAttemptsRef.current += 1;
+    const delay = AUTO_CREATE_BACKOFF_MS[attempt] ?? AUTO_CREATE_BACKOFF_MS[AUTO_CREATE_BACKOFF_MS.length - 1];
+
+    const timer = setTimeout(() => {
       createTrip(t('planner.defaultTripName'));
-    }
-  }, [trip, loading, createTrip]);
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [trip, loading, createTrip, t]);
 
   // Resume a save that was interrupted by the sign-in redirect: a signed-out
   // "Save" tap stashes the in-progress plan to localStorage before calling
@@ -659,7 +686,7 @@ export default function UnifiedPlannerScreen() {
     candidateMarkersRef.current.forEach((m) => m.setMap(null));
     candidateMarkersRef.current = [];
 
-    const candidates: SearchItem[] = [...VENUES, ...AIRPORTS].filter((item) => !addedNames.includes(item.name));
+    const candidates: SearchItem[] = [...venues, ...AIRPORTS].filter((item) => !addedNames.includes(item.name));
     candidates.forEach((item) => {
       const marker = new window.google.maps.Marker({
         position: { lat: item.lat, lng: item.lng },
@@ -677,7 +704,7 @@ export default function UnifiedPlannerScreen() {
       candidateMarkersRef.current = [];
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapReady, addedNames.join(',')]);
+  }, [mapReady, addedNames.join(','), venues]);
 
   // ── Static transit overlay (hand-collected zones — always-on fallback) ───
   // While a venue panel is open, its related points are shown regardless of
@@ -715,7 +742,7 @@ export default function UnifiedPlannerScreen() {
     let cancelled = false;
     setLiveLoading(true);
     setLiveError(null);
-    Promise.all(VENUES.map((v) => api.getMicromobility(v.lat, v.lng, 800).catch(() => null)))
+    Promise.all(venues.map((v) => api.getMicromobility(v.lat, v.lng, 800).catch(() => null)))
       .then((results) => {
         if (cancelled) return;
         const seen = new Set<string>();
@@ -736,7 +763,7 @@ export default function UnifiedPlannerScreen() {
       })
       .finally(() => { if (!cancelled) setLiveLoading(false); });
     return () => { cancelled = true; };
-  }, [liveEnabled]);
+  }, [liveEnabled, venues]);
 
   useEffect(() => {
     const map = mapRef.current;
