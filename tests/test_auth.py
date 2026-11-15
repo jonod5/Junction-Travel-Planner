@@ -20,6 +20,8 @@ from app.db import Base  # noqa: E402
 from app.models.user import User  # noqa: E402
 
 HS_SECRET = "test-secret-at-least-32-bytes-long-for-hs256"
+PROJECT_URL = "https://project.supabase.co"
+ISSUER = f"{PROJECT_URL}/auth/v1"
 SUB = "11111111-1111-1111-1111-111111111111"
 EMAIL = "rider@example.com"
 
@@ -167,7 +169,7 @@ def test_jwks_valid_token_creates_user(db_session, monkeypatch):
     # live Supabase project.
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
     token = jwt.encode(
-        {"sub": SUB, "email": EMAIL, "aud": "authenticated", "exp": int(time.time()) + 3600},
+        {"sub": SUB, "email": EMAIL, "aud": "authenticated", "iss": ISSUER, "exp": int(time.time()) + 3600},
         private_key,
         algorithm="RS256",
     )
@@ -177,7 +179,7 @@ def test_jwks_valid_token_creates_user(db_session, monkeypatch):
         def get_signing_key_from_jwt(self, tok):
             return fake_signing_key
 
-    monkeypatch.setenv("SUPABASE_URL", "https://project.supabase.co")
+    monkeypatch.setenv("SUPABASE_URL", PROJECT_URL)
     monkeypatch.delenv("SUPABASE_JWT_SECRET", raising=False)
     monkeypatch.setattr(auth, "_jwks_client_for", lambda url: FakeJWKClient())
 
@@ -193,9 +195,82 @@ def test_jwks_falls_back_to_hs256_when_jwks_lookup_fails(db_session, monkeypatch
         def get_signing_key_from_jwt(self, tok):
             raise jwt.PyJWKClientError("no matching key")
 
-    monkeypatch.setenv("SUPABASE_URL", "https://project.supabase.co")
+    monkeypatch.setenv("SUPABASE_URL", PROJECT_URL)
     monkeypatch.setenv("SUPABASE_JWT_SECRET", HS_SECRET)
     monkeypatch.setattr(auth, "_jwks_client_for", lambda url: FailingJWKClient())
 
-    user = auth.get_current_user(_request(_hs256_token()), db_session)
+    user = auth.get_current_user(_request(_hs256_token(iss=ISSUER)), db_session)
     assert user.id == SUB
+
+
+# ── Required claims and issuer (audit SEC-05) ────────────────────────────────
+
+def _rs256_setup(monkeypatch, claims: dict):
+    """A token signed by a real RSA key, with the JWKS lookup stubbed to it."""
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    token = jwt.encode(claims, private_key, algorithm="RS256")
+    fake_signing_key = SimpleNamespace(key=private_key.public_key())
+
+    class FakeJWKClient:
+        def get_signing_key_from_jwt(self, tok):
+            return fake_signing_key
+
+    monkeypatch.setenv("SUPABASE_URL", PROJECT_URL)
+    monkeypatch.delenv("SUPABASE_JWT_SECRET", raising=False)
+    monkeypatch.setattr(auth, "_jwks_client_for", lambda url: FakeJWKClient())
+    return token
+
+
+def _base_claims(**overrides) -> dict:
+    claims = {"sub": SUB, "email": EMAIL, "aud": "authenticated", "iss": ISSUER, "exp": int(time.time()) + 3600}
+    claims.update(overrides)
+    return {k: v for k, v in claims.items() if v is not None}
+
+
+def test_token_without_exp_is_rejected(db_session, monkeypatch):
+    # PyJWT only validates exp when present — a token that omits it would
+    # otherwise never expire.
+    token = _rs256_setup(monkeypatch, _base_claims(exp=None))
+    with pytest.raises(HTTPException) as exc:
+        auth.get_current_user(_request(token), db_session)
+    assert exc.value.status_code == 401
+
+
+def test_hs256_token_without_exp_is_rejected(db_session, monkeypatch):
+    monkeypatch.delenv("SUPABASE_URL", raising=False)
+    monkeypatch.setenv("SUPABASE_JWT_SECRET", HS_SECRET)
+    token = jwt.encode({"sub": SUB, "email": EMAIL, "aud": "authenticated"}, HS_SECRET, algorithm="HS256")
+    with pytest.raises(HTTPException) as exc:
+        auth.get_current_user(_request(token), db_session)
+    assert exc.value.status_code == 401
+
+
+@pytest.mark.parametrize("iss", [None, "https://other-project.supabase.co/auth/v1", PROJECT_URL])
+def test_token_from_another_issuer_is_rejected(db_session, monkeypatch, iss):
+    token = _rs256_setup(monkeypatch, _base_claims(iss=iss))
+    with pytest.raises(HTTPException) as exc:
+        auth.get_current_user(_request(token), db_session)
+    assert exc.value.status_code == 401
+
+
+def test_issuer_check_tolerates_trailing_slash_in_config(db_session, monkeypatch):
+    token = _rs256_setup(monkeypatch, _base_claims())
+    monkeypatch.setenv("SUPABASE_URL", PROJECT_URL + "/")
+    assert auth.get_current_user(_request(token), db_session).id == SUB
+
+
+def test_wrong_audience_is_rejected(db_session, monkeypatch):
+    token = _rs256_setup(monkeypatch, _base_claims(aud="anon"))
+    with pytest.raises(HTTPException) as exc:
+        auth.get_current_user(_request(token), db_session)
+    assert exc.value.status_code == 401
+
+
+def test_hs256_token_is_not_accepted_on_the_jwks_path(db_session, monkeypatch):
+    # Algorithm confusion: with only JWKS configured, a token signed HS256
+    # (e.g. using the public key bytes as the secret) must not verify.
+    _rs256_setup(monkeypatch, _base_claims())
+    forged = jwt.encode(_base_claims(), HS_SECRET, algorithm="HS256")
+    with pytest.raises(HTTPException) as exc:
+        auth.get_current_user(_request(forged), db_session)
+    assert exc.value.status_code == 401
