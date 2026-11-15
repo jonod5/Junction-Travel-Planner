@@ -1,6 +1,37 @@
+# Only what the API and its CLIs need goes into the image: app/, alembic/,
+# alembic.ini, requirements.txt, docs/ (the sample survey CSV the ingest docs
+# point at). Everything else stays out — it bloats the image and, for the env
+# files, could bake local secrets into a layer.
+
+# Secrets and local env files, at any depth
 .env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+
+# VCS, CI, editor and agent tooling
 .git
-__pycache__
-*.pyc
-venv/
-node_modules/
+.github
+.claude
+.agents
+.planning
+.vscode
+.DS_Store
+skills-lock.json
+
+# Python build/test artefacts and virtualenvs
+**/__pycache__
+**/*.pyc
+.pytest_cache
+.ruff_cache
+.venv
+venv
+
+# The frontend is deployed separately (Vercel) and is never served from here
+frontend
+**/node_modules
+
+# Not needed at runtime
+tests
+ONBOARDING.md

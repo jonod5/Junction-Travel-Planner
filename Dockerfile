@@ -10,8 +10,14 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your app code
-COPY . .
+# Run as an unprivileged user — nothing the API does needs root, and a
+# compromised process shouldn't get it for free.
+RUN useradd --create-home --uid 10001 appuser
+
+# Copy the rest of your app code (see .dockerignore for what is left out)
+COPY --chown=appuser:appuser . .
+
+USER appuser
 
 # Railway injects PORT; default to 8000 for local dev.
 # WEB_CONCURRENCY (Railway/Heroku-recognized name) sets worker process
