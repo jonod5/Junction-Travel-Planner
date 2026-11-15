@@ -70,7 +70,6 @@ class StopOut(BaseModel):
 
 class TripCreate(BaseModel):
     name: str
-    user_id: str | None = None
 
 
 class TripUpdate(BaseModel):
@@ -86,6 +85,12 @@ class TripOut(BaseModel):
     user_id: str | None
     stops: list[StopOut] = []
     legs: list[LegOut] = []
+
+
+class TripCreatedOut(TripOut):
+    """POST /api/trips only — the one response that carries the trip's
+    access token. The client keeps it and sends it back as X-Trip-Token."""
+    access_token: str
 
 
 # ── Venue detail ─────────────────────────────────────────────────────────────

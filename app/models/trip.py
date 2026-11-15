@@ -12,8 +12,9 @@ Design choices:
 - order_index is a plain integer; the API reorders by writing new values in
   a single transaction rather than renumbering in-place, which avoids unique
   constraint violations mid-reorder.
-- user_id is nullable now; when auth is added it becomes a FK and can be
-  indexed without a migration altering existing rows.
+- Trips are anonymous working state for the planner, not user-owned data
+  (saved plans are Itinerary rows). Access is by a per-trip capability
+  token (access_token), not by the guessable integer id.
 """
 
 from datetime import datetime
@@ -35,8 +36,14 @@ class Trip(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
-    # Reserved for future auth; nullable so the MVP ships without a user table.
+    # Never written by the API — kept only because the column already exists.
+    # Trips are anonymous; a signed-in user's plans live in Itinerary.
     user_id: Mapped[str | None] = mapped_column(String(100))
+    # Capability token for this (anonymous) trip: returned once by POST
+    # /api/trips and required in the X-Trip-Token header on every other trip
+    # route — see app/routers/trips.py. The integer id alone is guessable.
+    # NULL only on rows created before migration 0018; those are unreachable.
+    access_token: Mapped[str | None] = mapped_column(String(64))
 
     stops: Mapped[list["Stop"]] = relationship(
         back_populates="trip",

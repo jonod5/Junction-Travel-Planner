@@ -14,6 +14,17 @@ function getBaseUrl(): string {
   return 'http://localhost:8000';
 }
 
+// Per-trip access tokens. POST /api/trips returns one; every other /api/trips
+// route requires it back in the X-Trip-Token header (see app/routers/trips.py).
+// Trips are the planner's in-memory working state for this page load and are
+// never reloaded by id, so the token only needs to live as long as the page.
+const tripTokens = new Map<number, string>();
+
+function tripAuth(tripId: number): { headers: Record<string, string> } {
+  const token = tripTokens.get(tripId);
+  return { headers: token ? { 'X-Trip-Token': token } : {} };
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json', ...(options?.headers as Record<string, string> | undefined) };
   // Attaches the current Supabase session's access token when one exists —
@@ -398,23 +409,30 @@ export interface AccountUpdateBody {
 // ── API ───────────────────────────────────────────────────────────────────────
 
 export const api = {
-  createTrip: (name: string) =>
-    request<Trip>('/api/trips', { method: 'POST', body: JSON.stringify({ name }) }),
+  createTrip: async (name: string): Promise<Trip> => {
+    const { access_token, ...trip } = await request<Trip & { access_token: string }>('/api/trips', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+    tripTokens.set(trip.id, access_token);
+    return trip;
+  },
 
-  getTrip: (id: number) => request<Trip>(`/api/trips/${id}`),
+  getTrip: (id: number) => request<Trip>(`/api/trips/${id}`, tripAuth(id)),
 
-  deleteTrip: (id: number) => request<void>(`/api/trips/${id}`, { method: 'DELETE' }),
+  deleteTrip: (id: number) => request<void>(`/api/trips/${id}`, { method: 'DELETE', ...tripAuth(id) }),
 
   addStop: (tripId: number, body: { venue_id?: number; name: string; lat: number; lng: number }) =>
-    request<Stop>(`/api/trips/${tripId}/stops`, { method: 'POST', body: JSON.stringify(body) }),
+    request<Stop>(`/api/trips/${tripId}/stops`, { method: 'POST', body: JSON.stringify(body), ...tripAuth(tripId) }),
 
   removeStop: (tripId: number, stopId: number) =>
-    request<void>(`/api/trips/${tripId}/stops/${stopId}`, { method: 'DELETE' }),
+    request<void>(`/api/trips/${tripId}/stops/${stopId}`, { method: 'DELETE', ...tripAuth(tripId) }),
 
   reorderStops: (tripId: number, order: { stop_id: number; order_index: number }[]) =>
     request<Trip>(`/api/trips/${tripId}/stops/reorder`, {
       method: 'PATCH',
       body: JSON.stringify(order),
+      ...tripAuth(tripId),
     }),
 
   getDirections: (origin: string, destination: string, mode: string, language?: string) =>
@@ -433,7 +451,7 @@ export const api = {
       duration_s: number;
       polyline: string;
     },
-  ) => request<Leg>(`/api/trips/${tripId}/legs`, { method: 'PUT', body: JSON.stringify(body) }),
+  ) => request<Leg>(`/api/trips/${tripId}/legs`, { method: 'PUT', body: JSON.stringify(body), ...tripAuth(tripId) }),
 
   getVenue: (id: number, language?: string) =>
     request<VenueDetail>(`/api/venues/${id}${language ? `?language=${encodeURIComponent(language)}` : ''}`),

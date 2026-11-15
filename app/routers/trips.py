@@ -20,21 +20,50 @@ Design choices:
 - Reorder uses a single transaction to write all new order_index values
   atomically so no intermediate state violates a unique constraint.
 - 404 responses use a shared helper to keep error shapes consistent.
+- Access control: trips are anonymous (planning never requires sign-in), so
+  there is no owner to scope by. Instead POST /api/trips returns a random
+  access token, and every other route requires it in the X-Trip-Token
+  header. A missing or wrong token is the same 404 as a trip that doesn't
+  exist, so ids can't be probed. Without this, the sequential integer id
+  let anyone read, edit or delete any trip.
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+import hmac
+import secrets
+
+from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models.trip import Leg, Stop, Trip
-from app.schemas import LegOut, LegUpsert, StopCreate, StopOut, StopReorder, TripCreate, TripOut, TripUpdate
+from app.schemas import (
+    LegOut,
+    LegUpsert,
+    StopCreate,
+    StopOut,
+    StopReorder,
+    TripCreate,
+    TripCreatedOut,
+    TripOut,
+    TripUpdate,
+)
 
 router = APIRouter(prefix="/api/trips", tags=["trips"])
 
 
-def _get_trip_or_404(trip_id: int, db: Session) -> Trip:
+def _get_trip_or_404(
+    trip_id: int,
+    x_trip_token: str | None = Header(default=None),
+    db: Session = Depends(get_db),
+) -> Trip:
+    """Dependency: the trip, but only for a caller holding its access token."""
     trip = db.get(Trip, trip_id)
-    if not trip:
+    if (
+        not trip
+        or not trip.access_token
+        or not x_trip_token
+        or not hmac.compare_digest(trip.access_token.encode(), x_trip_token.encode())
+    ):
         raise HTTPException(status_code=404, detail=f"Trip {trip_id} not found")
     return trip
 
@@ -48,10 +77,10 @@ def _get_stop_or_404(stop_id: int, trip_id: int, db: Session) -> Stop:
 
 # ── Trip CRUD ────────────────────────────────────────────────────────────────
 
-@router.post("", response_model=TripOut, status_code=201)
+@router.post("", response_model=TripCreatedOut, status_code=201)
 def create_trip(body: TripCreate, db: Session = Depends(get_db)):
-    """Create a new empty trip."""
-    trip = Trip(name=body.name, user_id=body.user_id)
+    """Create a new empty trip. The response is the only place its access token appears."""
+    trip = Trip(name=body.name, access_token=secrets.token_urlsafe(32))
     db.add(trip)
     db.commit()
     db.refresh(trip)
@@ -59,15 +88,14 @@ def create_trip(body: TripCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/{trip_id}", response_model=TripOut)
-def get_trip(trip_id: int, db: Session = Depends(get_db)):
+def get_trip(trip: Trip = Depends(_get_trip_or_404)):
     """Return trip with all stops (ordered) and legs."""
-    return _get_trip_or_404(trip_id, db)
+    return trip
 
 
 @router.patch("/{trip_id}", response_model=TripOut)
-def update_trip(trip_id: int, body: TripUpdate, db: Session = Depends(get_db)):
+def update_trip(body: TripUpdate, trip: Trip = Depends(_get_trip_or_404), db: Session = Depends(get_db)):
     """Rename a trip."""
-    trip = _get_trip_or_404(trip_id, db)
     trip.name = body.name
     db.commit()
     db.refresh(trip)
@@ -75,9 +103,8 @@ def update_trip(trip_id: int, body: TripUpdate, db: Session = Depends(get_db)):
 
 
 @router.delete("/{trip_id}", status_code=204)
-def delete_trip(trip_id: int, db: Session = Depends(get_db)):
+def delete_trip(trip: Trip = Depends(_get_trip_or_404), db: Session = Depends(get_db)):
     """Delete trip — stops and legs cascade via FK."""
-    trip = _get_trip_or_404(trip_id, db)
     db.delete(trip)
     db.commit()
 
@@ -85,18 +112,17 @@ def delete_trip(trip_id: int, db: Session = Depends(get_db)):
 # ── Stop CRUD ────────────────────────────────────────────────────────────────
 
 @router.post("/{trip_id}/stops", response_model=StopOut, status_code=201)
-def add_stop(trip_id: int, body: StopCreate, db: Session = Depends(get_db)):
+def add_stop(body: StopCreate, trip: Trip = Depends(_get_trip_or_404), db: Session = Depends(get_db)):
     """
     Append a stop to the trip.
 
     order_index is set to max(existing) + 1 so the new stop lands at the
     bottom without the caller needing to know the current count.
     """
-    trip = _get_trip_or_404(trip_id, db)
     # Compute next order index from the already-loaded relationship.
     next_order = max((s.order_index for s in trip.stops), default=-1) + 1
     stop = Stop(
-        trip_id=trip_id,
+        trip_id=trip.id,
         venue_id=body.venue_id,
         name=body.name,
         lat=body.lat,
@@ -110,7 +136,7 @@ def add_stop(trip_id: int, body: StopCreate, db: Session = Depends(get_db)):
 
 
 @router.delete("/{trip_id}/stops/{stop_id}", status_code=204)
-def remove_stop(trip_id: int, stop_id: int, db: Session = Depends(get_db)):
+def remove_stop(stop_id: int, trip: Trip = Depends(_get_trip_or_404), db: Session = Depends(get_db)):
     """
     Remove a stop and orphan any legs that reference it.
 
@@ -118,20 +144,19 @@ def remove_stop(trip_id: int, stop_id: int, db: Session = Depends(get_db)):
     to_stop_id both have ondelete="CASCADE").  The frontend should re-compute
     the affected leg after deletion.
     """
-    stop = _get_stop_or_404(stop_id, trip_id, db)
+    stop = _get_stop_or_404(stop_id, trip.id, db)
     db.delete(stop)
     db.commit()
 
 
 @router.patch("/{trip_id}/stops/reorder", response_model=TripOut)
-def reorder_stops(trip_id: int, body: list[StopReorder], db: Session = Depends(get_db)):
+def reorder_stops(body: list[StopReorder], trip: Trip = Depends(_get_trip_or_404), db: Session = Depends(get_db)):
     """
     Update order_index for multiple stops in one transaction.
 
     The client sends the full desired order as [{stop_id, order_index}].
     Any stop not in the list keeps its current order_index unchanged.
     """
-    trip = _get_trip_or_404(trip_id, db)
     # Build a lookup to avoid N queries.
     stop_map = {s.id: s for s in trip.stops}
     # Apply in a stable order (by stop_id) rather than the client-supplied
@@ -153,7 +178,7 @@ def reorder_stops(trip_id: int, body: list[StopReorder], db: Session = Depends(g
 # ── Leg upsert ───────────────────────────────────────────────────────────────
 
 @router.put("/{trip_id}/legs", response_model=LegOut, status_code=201)
-def upsert_leg(trip_id: int, body: LegUpsert, db: Session = Depends(get_db)):
+def upsert_leg(body: LegUpsert, trip: Trip = Depends(_get_trip_or_404), db: Session = Depends(get_db)):
     """
     Store or replace the routing result for a stop pair + mode.
 
@@ -161,11 +186,14 @@ def upsert_leg(trip_id: int, body: LegUpsert, db: Session = Depends(get_db)):
     then calls this endpoint to persist it.  Existing legs for the same
     (trip, from, to, mode) triple are replaced rather than appended.
     """
-    _get_trip_or_404(trip_id, db)
+    # Both stops must belong to this trip — otherwise a caller could attach
+    # a leg to (and so reference) another trip's stops.
+    _get_stop_or_404(body.from_stop_id, trip.id, db)
+    _get_stop_or_404(body.to_stop_id, trip.id, db)
     # Delete any existing leg for this exact pair+mode.
     existing = (
         db.query(Leg)
-        .filter_by(trip_id=trip_id, from_stop_id=body.from_stop_id, to_stop_id=body.to_stop_id, mode=body.mode)
+        .filter_by(trip_id=trip.id, from_stop_id=body.from_stop_id, to_stop_id=body.to_stop_id, mode=body.mode)
         .first()
     )
     if existing:
@@ -173,7 +201,7 @@ def upsert_leg(trip_id: int, body: LegUpsert, db: Session = Depends(get_db)):
         db.flush()
 
     leg = Leg(
-        trip_id=trip_id,
+        trip_id=trip.id,
         from_stop_id=body.from_stop_id,
         to_stop_id=body.to_stop_id,
         mode=body.mode,
