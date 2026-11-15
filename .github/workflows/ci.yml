@@ -14,17 +14,19 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  backend:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      # Same Python as the production image (Dockerfile: python:3.11-slim).
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.11"
           cache: "pip"
+          cache-dependency-path: requirements*.txt
 
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
@@ -37,12 +39,39 @@ jobs:
 
       # DATABASE_URL must be set (even to a dummy value) so the module-level
       # `os.environ["DATABASE_URL"]` in db.py doesn't KeyError at import time.
-      # The test mocks _wait_for_db so no real DB is needed.
+      # Tests override the DB and stub Redis and every upstream API, so no
+      # service containers and no API keys are needed.
       - name: Run tests
         env:
           DATABASE_URL: postgresql+psycopg2://ci:ci@localhost:5432/ci
           REDIS_URL: redis://localhost:6379/0
-          GOOGLE_MAPS_KEY: dummy
-          GTFS_STATIC_URL: https://example.com/gtfs.zip
-          GTFS_RT_VEHICLES_URL: https://example.com/vehicles.pb
         run: pytest tests/ -v
+
+  # Nothing checked the frontend before: a type error or a broken web build
+  # went straight to Vercel. There is no frontend lint config or test suite
+  # yet, so this is the type check plus the same build Vercel runs.
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Expo SDK 57 needs Node 22.13 or newer.
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build web export
+        run: npx expo export --platform web

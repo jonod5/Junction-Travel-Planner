@@ -54,6 +54,7 @@ def client(monkeypatch):
     fake = FakeRedis()
     monkeypatch.setattr(places, "get_redis", lambda: fake)
     monkeypatch.setattr(rl, "get_redis", lambda: fake)
+    monkeypatch.delenv("GOOGLE_MAPS_KEY", raising=False)
     monkeypatch.setenv("GOOGLE_MAPS_API_KEY", "test-key")
     with patch("app.main._wait_for_db", return_value=None):
         from app.main import app
@@ -101,6 +102,7 @@ def test_has_its_own_per_client_rate_limit(client, monkeypatch):
 
 def test_missing_key_is_a_500_without_calling_google(client, monkeypatch):
     monkeypatch.delenv("GOOGLE_MAPS_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_MAPS_KEY", raising=False)
     with patch.object(places.httpx, "Client") as ctor:
         resp = client.get("/api/places", params={"query": "anything"})
     assert resp.status_code == 500

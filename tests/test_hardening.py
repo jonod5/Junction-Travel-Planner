@@ -51,6 +51,7 @@ def _google(payload):
 
 @pytest.mark.parametrize("status", ["REQUEST_DENIED", "OVER_QUERY_LIMIT", "INVALID_REQUEST", "UNKNOWN_ERROR"])
 def test_directions_does_not_leak_upstream_status(monkeypatch, status):
+    monkeypatch.delenv("GOOGLE_MAPS_KEY", raising=False)
     monkeypatch.setenv("GOOGLE_MAPS_API_KEY", "k")
     monkeypatch.setattr(directions, "get_redis", lambda: _Redis())
     payload = {"status": status, "error_message": "The provided API key is invalid."}
