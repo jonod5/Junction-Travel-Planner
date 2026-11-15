@@ -445,7 +445,8 @@ def optimize(
     """
     # A missing Maps key is a server misconfiguration, not a per-candidate miss.
     if not _api_key():
-        raise DirectionsError("Maps API key not configured", status_code=500)
+        log.error("Maps API key is not configured")
+        raise DirectionsError("Routing is temporarily unavailable", status_code=500)
 
     prefs = set(preferences) if preferences else None
 

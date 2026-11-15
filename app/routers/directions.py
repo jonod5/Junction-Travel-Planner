@@ -131,7 +131,8 @@ def fetch_directions(
     """
     api_key = _api_key()
     if not api_key:
-        raise DirectionsError("Maps API key not configured", status_code=500)
+        log.error("Maps API key is not configured")
+        raise DirectionsError("Routing is temporarily unavailable", status_code=500)
 
     language = _normalize_language(language)
     is_transit = mode == "transit"
@@ -170,8 +171,10 @@ def fetch_directions(
     if status == "ZERO_RESULTS":
         return None
     if status != "OK":
-        log.error("Directions API error status: %s", status)
-        raise DirectionsError(f"Directions API error: {status}", status_code=502)
+        # The upstream status (REQUEST_DENIED, OVER_QUERY_LIMIT, …) says things
+        # about our key and quota — log it, don't hand it to the client.
+        log.error("Directions API error status: %s — %s", status, data.get("error_message", ""))
+        raise DirectionsError("Directions API unavailable", status_code=502)
 
     try:
         route = data["routes"][0]

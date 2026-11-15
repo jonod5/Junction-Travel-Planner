@@ -27,6 +27,7 @@ import csv
 import hashlib
 import io
 import logging
+import os
 import random
 from datetime import datetime, timezone
 
@@ -41,6 +42,7 @@ from app.auth import get_current_user_optional
 from app.db import get_db
 from app.models.sp import SPAlternative, SPChoiceTask, SPRespondent, SPResponse, SPSurvey
 from app.models.user import User
+from app.rate_limit import rate_limit
 from app.schemas_sp import (
     AlternativeOut,
     ChoiceRequest,
@@ -53,6 +55,12 @@ from app.schemas_sp import (
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/survey", tags=["survey"])
+
+# Starting a session is anonymous and creates a respondent row that counts
+# toward balanced block assignment (_assign_block), so a script looping on it
+# would both fill the table and skew which block real respondents land in.
+# A person starts one session; this leaves room for retries and shared IPs.
+SESSION_RATE_LIMIT = int(os.environ.get("RATE_LIMIT_SURVEY_SESSION_PER_MIN", "10"))
 
 
 def _task_sequence_for(db: Session, respondent: SPRespondent, survey: SPSurvey) -> list[SPChoiceTask]:
@@ -106,7 +114,11 @@ def _alt_out(alt: SPAlternative) -> AlternativeOut:
     )
 
 
-@router.post("/{survey_id}/session", response_model=SessionStartResponse)
+@router.post(
+    "/{survey_id}/session",
+    response_model=SessionStartResponse,
+    dependencies=[Depends(rate_limit("survey_session", SESSION_RATE_LIMIT, 60))],
+)
 def start_session(
     survey_id: int,
     body: SessionStartRequest,

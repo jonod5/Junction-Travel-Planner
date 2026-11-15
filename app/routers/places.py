@@ -67,7 +67,8 @@ def search_places(
     """
     api_key = os.environ.get("GOOGLE_MAPS_API_KEY")
     if not api_key:
-        raise HTTPException(status_code=500, detail="Maps API key not configured")
+        log.error("Maps API key is not configured")
+        raise HTTPException(status_code=500, detail="Place search is temporarily unavailable")
 
     cache_key = _cache_key(query)
     cached = _cache_get(cache_key)
@@ -92,10 +93,9 @@ def search_places(
 
     data = resp.json()
     if data.get("status") not in ("OK", "ZERO_RESULTS"):
-        log.error("Places API error status: %s", data.get("status"))
-        raise HTTPException(
-            status_code=502, detail=f"Places API error: {data.get('status')}"
-        )
+        # Same as the directions proxy: the upstream status is for our logs only.
+        log.error("Places API error status: %s — %s", data.get("status"), data.get("error_message", ""))
+        raise HTTPException(status_code=502, detail="Places API unavailable")
 
     # Return only name + formatted_address — never pass raw Place data to
     # clients because it may contain billing-sensitive fields.
