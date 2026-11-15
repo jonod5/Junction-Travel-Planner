@@ -5,11 +5,9 @@
     "signOut": "Sign out",
     "cancel": "Cancel",
     "save": "Save",
-    "close": "Close",
     "back": "Back",
     "next": "Next",
     "retry": "Retry",
-    "delete": "Delete",
     "gamesPolicy": "No spectator parking at venues during the Games. Attendees must use transit, sanctioned park-and-ride, or active transport.",
     "walk": "Walk",
     "board": "Board",
@@ -77,10 +75,6 @@
       "moveUp": "Move {{name}} up",
       "moveDown": "Move {{name}} down",
       "addStop": "Add stop"
-    },
-    "summary": {
-      "text": "{{stops}} · {{duration}}",
-      "stopsOnly": "{{stops}}"
     },
     "saveThisTrip": "Save this trip",
     "signInNotConfigured": "Sign-in is not configured in this environment.",

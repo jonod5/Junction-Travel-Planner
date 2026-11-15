@@ -5,11 +5,9 @@
     "signOut": "退出登录",
     "cancel": "取消",
     "save": "保存",
-    "close": "关闭",
     "back": "返回",
     "next": "下一步",
     "retry": "重试",
-    "delete": "删除",
     "gamesPolicy": "洛杉矶2028奥运会期间，各场馆不提供观众停车位。观众须使用公共交通、指定的换乘停车场或其他绿色出行方式前往。",
     "walk": "步行",
     "board": "上车",
@@ -75,10 +73,6 @@
       "moveUp": "将 {{name}} 上移",
       "moveDown": "将 {{name}} 下移",
       "addStop": "添加站点"
-    },
-    "summary": {
-      "text": "{{stops}} · {{duration}}",
-      "stopsOnly": "{{stops}}"
     },
     "saveThisTrip": "保存此行程",
     "signInNotConfigured": "此环境未配置登录功能。",

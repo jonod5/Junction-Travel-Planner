@@ -5,11 +5,9 @@
     "signOut": "Cerrar sesión",
     "cancel": "Cancelar",
     "save": "Guardar",
-    "close": "Cerrar",
     "back": "Atrás",
     "next": "Siguiente",
     "retry": "Reintentar",
-    "delete": "Eliminar",
     "gamesPolicy": "No hay estacionamiento para espectadores en las sedes durante los Juegos. Los asistentes deben usar transporte público, estacionamiento autorizado con traslado, o transporte activo.",
     "walk": "Caminar",
     "board": "Abordar",
@@ -77,10 +75,6 @@
       "moveUp": "Mover {{name}} hacia arriba",
       "moveDown": "Mover {{name}} hacia abajo",
       "addStop": "Agregar parada"
-    },
-    "summary": {
-      "text": "{{stops}} · {{duration}}",
-      "stopsOnly": "{{stops}}"
     },
     "saveThisTrip": "Guardar este viaje",
     "signInNotConfigured": "El inicio de sesión no está configurado en este entorno.",
