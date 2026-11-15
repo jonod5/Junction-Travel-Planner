@@ -1,8 +1,17 @@
 name: CI
 
+# Push runs are limited to the long-lived branches; every other branch is
+# covered by its pull request. (Triggering on all pushes AND pull_request ran
+# each PR twice.)
 on:
   push:
+    branches: [main, demo]
   pull_request:
+
+# The workflow only reads the repo. Without this block the job token gets the
+# repository's default permissions, which can include write access.
+permissions:
+  contents: read
 
 jobs:
   test:
