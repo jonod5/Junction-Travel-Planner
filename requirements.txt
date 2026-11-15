@@ -23,10 +23,18 @@ gtfs-realtime-bindings
 # Retry helper for DB startup wait (used in main.py lifespan)
 tenacity
 
-# Supabase JWT verification (JWKS/RS256 + HS256 shared-secret fallback)
-PyJWT[crypto]
+# Supabase JWT verification (JWKS/RS256 + HS256 shared-secret fallback).
+# Floor: releases before 2.15.0 carry JWKS-handling and algorithm-confusion
+# advisories (pip-audit, 2026-11).
+PyJWT[crypto]>=2.15.0
 
-# Dev / CI tools (not needed in prod but harmless to install)
-ruff
-pytest
-pytest-asyncio
+# Security floors for transitive dependencies flagged by pip-audit (2026-11).
+# Nothing here imports them directly; listing them only sets a minimum.
+anyio>=4.14.2
+certifi>=2026.10.18
+
+# NOTE: everything else is unpinned, so a build installs whatever is newest
+# that day and can't be reproduced later. The next step is a lock file
+# (pip-compile / uv lock) checked in next to this one.
+#
+# Lint and test tools live in requirements-dev.txt — not installed in the image.
