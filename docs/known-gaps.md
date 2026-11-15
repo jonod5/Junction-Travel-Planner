@@ -46,4 +46,13 @@ agency (or a parameterized version of the existing one), then re-run
 `python -m app.enrich_venue 17 18 20 21 28 29 30 31`. New scope, not a bug
 fix — not started.
 
+**Hidden from the app (v1.7b):** these 8 venues are now hidden from the app
+(`venue.listed = false`, migration 0017), along with 10 other venues outside
+LA Metro's service area (Carson, Riviera, Port of LA, Whittier Narrows) — the
+intended scope is the LA Metro-served core. Nothing is deleted: they stay in
+the database, `GET /api/venues/{id}` still serves them, and the enrichment
+pipeline still processes them. **Ingesting the other agencies' GTFS feeds
+(Long Beach Transit, OCTA, Foothill Transit) is the prerequisite for
+un-hiding them** — then set `listed = true` for the venue.
+
 **Status:** ☐ not started

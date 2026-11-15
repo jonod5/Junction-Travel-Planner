@@ -43,6 +43,13 @@ from app.models.venue import Venue
 from app.services.geocode import GeocodeError, geocode_address
 
 # ---------------------------------------------------------------------------
+# Scope: the app lists only the LA Metro-served core. The venues tagged
+# listed=False below are still registered (and still enriched/reviewed) but
+# are hidden from GET /api/venues until their agency's GTFS feed is ingested
+# — see docs/known-gaps.md. `listed` is applied only when a row is first
+# created; re-running registration skips an existing venue entirely, so it
+# never flips a hidden venue back to visible (or the reverse).
+#
 # LA28 venues (Greater LA region; football + OKC excluded; existing 6
 # excluded) — per the LA28 Games Map, which is subject to change; noted in
 # each row's data_sources_summary.
@@ -82,51 +89,55 @@ VENUES: list[dict] = [
     dict(external_ref="venice-beach", name="Venice Beach", zone="Venice", sport_use="Triathlon",
          geocode_query="Venice Beach, Los Angeles, CA",
          lat=33.97657143605985, lng=-118.46676819870399),  # user-corrected — Google's APPROXIMATE was off
-    dict(external_ref="riviera-country-club", name="Riviera Country Club", zone="Riviera", sport_use="Golf",
+    dict(external_ref="riviera-country-club", listed=False, name="Riviera Country Club", zone="Riviera",
+         sport_use="Golf",
          geocode_query="Riviera Country Club, Pacific Palisades, Los Angeles, CA"),
-    dict(external_ref="alamitos-beach-stadium", name="Alamitos Beach Stadium", zone="Long Beach",
+    dict(external_ref="alamitos-beach-stadium", listed=False, name="Alamitos Beach Stadium", zone="Long Beach",
          sport_use="Beach Volleyball", geocode_query="Alamitos Beach, Long Beach, CA",
          lat=33.76404993538532, lng=-118.17663578290241),  # user-corrected — Google's APPROXIMATE was off
-    dict(external_ref="long-beach-aquatics-center", name="Long Beach Aquatics Center", zone="Long Beach",
+    dict(external_ref="long-beach-aquatics-center", listed=False, name="Long Beach Aquatics Center", zone="Long Beach",
          sport_use="Artistic Swimming, Water Polo",
          geocode_query="Long Beach Aquatics Center, Long Beach, CA", fuzzy=True),
-    dict(external_ref="long-beach-arena", name="Long Beach Arena", zone="Long Beach", sport_use="Handball",
+    dict(external_ref="long-beach-arena", listed=False, name="Long Beach Arena", zone="Long Beach",
+         sport_use="Handball",
          geocode_query="Long Beach Arena, Long Beach, CA"),
-    dict(external_ref="long-beach-climbing-theater", name="Long Beach Climbing Theater", zone="Long Beach",
-         sport_use="Sport Climbing", geocode_query="Long Beach Convention Center, Long Beach, CA", fuzzy=True),
-    dict(external_ref="long-beach-target-shooting-hall", name="Long Beach Target Shooting Hall",
+    dict(external_ref="long-beach-climbing-theater", listed=False, name="Long Beach Climbing Theater",
+         zone="Long Beach", sport_use="Sport Climbing",
+         geocode_query="Long Beach Convention Center, Long Beach, CA", fuzzy=True),
+    dict(external_ref="long-beach-target-shooting-hall", listed=False, name="Long Beach Target Shooting Hall",
          zone="Long Beach", sport_use="Shooting (Rifle & Pistol)",
          geocode_query="Long Beach Convention Center, Long Beach, CA", fuzzy=True),
-    dict(external_ref="marine-stadium", name="Marine Stadium", zone="Long Beach",
+    dict(external_ref="marine-stadium", listed=False, name="Marine Stadium", zone="Long Beach",
          sport_use="Canoe Sprint, Rowing", geocode_query="Marine Stadium, Long Beach, CA"),
-    dict(external_ref="belmont-shore", name="Belmont Shore", zone="Long Beach",
+    dict(external_ref="belmont-shore", listed=False, name="Belmont Shore", zone="Long Beach",
          sport_use="Open Water Swimming, Coastal Rowing, Sailing (Windsurf & Kite)",
          geocode_query="Belmont Shore, Long Beach, CA",
          lat=33.754561087793135, lng=-118.13730405375101),  # user-corrected — Google's APPROXIMATE was off
-    dict(external_ref="port-of-los-angeles", name="Port of Los Angeles", zone="Port of LA",
+    dict(external_ref="port-of-los-angeles", listed=False, name="Port of Los Angeles", zone="Port of LA",
          sport_use="Sailing (Dinghy, Skiff, Multihull)",
          geocode_query="Port of Los Angeles, San Pedro, Los Angeles, CA",
          lat=33.71501589956295, lng=-118.27517059180938),  # user-corrected — Google's APPROXIMATE was off
-    dict(external_ref="carson-stadium", name="Carson Stadium (Dignity Health Sports Park)", zone="Carson",
+    dict(external_ref="carson-stadium", listed=False, name="Carson Stadium (Dignity Health Sports Park)", zone="Carson",
          sport_use="Archery, Rugby Sevens", geocode_query="Dignity Health Sports Park, Carson, CA"),
-    dict(external_ref="carson-velodrome", name="Carson Velodrome", zone="Carson", sport_use="Track Cycling",
+    dict(external_ref="carson-velodrome", listed=False, name="Carson Velodrome", zone="Carson",
+         sport_use="Track Cycling",
          geocode_query="VELO Sports Center, Carson, CA"),
-    dict(external_ref="carson-courts", name="Carson Courts", zone="Carson", sport_use="Tennis",
+    dict(external_ref="carson-courts", listed=False, name="Carson Courts", zone="Carson", sport_use="Tennis",
          geocode_query="Dignity Health Sports Park Tennis Center, Carson, CA", fuzzy=True),
-    dict(external_ref="carson-field", name="Carson Field", zone="Carson", sport_use="Hockey",
+    dict(external_ref="carson-field", listed=False, name="Carson Field", zone="Carson", sport_use="Hockey",
          geocode_query="Dignity Health Sports Park, Carson, CA", fuzzy=True),
     dict(external_ref="santa-anita-park", name="Santa Anita Park", zone="Arcadia", sport_use="Equestrian",
          geocode_query="Santa Anita Park, Arcadia, CA"),
-    dict(external_ref="whittier-narrows-shooting", name="Whittier Narrows Clay Shooting Center",
+    dict(external_ref="whittier-narrows-shooting", listed=False, name="Whittier Narrows Clay Shooting Center",
          zone="Whittier Narrows", sport_use="Shooting (Shotgun)",
          geocode_query="Whittier Narrows Recreation Area, South El Monte, CA", fuzzy=True),
-    dict(external_ref="industry-hills-mtb", name="Industry Hills MTB Course", zone="City of Industry",
+    dict(external_ref="industry-hills-mtb", listed=False, name="Industry Hills MTB Course", zone="City of Industry",
          sport_use="Mountain Bike", geocode_query="Industry Hills Expo Center, City of Industry, CA", fuzzy=True),
-    dict(external_ref="honda-center", name="Honda Center", zone="Anaheim", sport_use="Indoor Volleyball",
+    dict(external_ref="honda-center", listed=False, name="Honda Center", zone="Anaheim", sport_use="Indoor Volleyball",
          geocode_query="Honda Center, Anaheim, CA"),
-    dict(external_ref="fairgrounds-cricket-stadium", name="Fairgrounds Cricket Stadium (Fairplex)",
+    dict(external_ref="fairgrounds-cricket-stadium", listed=False, name="Fairgrounds Cricket Stadium (Fairplex)",
          zone="Pomona", sport_use="Cricket", geocode_query="Fairplex, Pomona, CA", fuzzy=True),
-    dict(external_ref="trestles-state-beach", name="Trestles State Beach", zone="Trestles Beach",
+    dict(external_ref="trestles-state-beach", listed=False, name="Trestles State Beach", zone="Trestles Beach",
          sport_use="Surfing", geocode_query="Trestles Beach, San Clemente, CA",
          lat=33.38694373302476, lng=-117.59552450583985),  # user-corrected — Google's GEOMETRIC_CENTER was off
 ]
@@ -239,6 +250,7 @@ def register_venue(db: Session, spec: dict) -> RegistrationOutcome:
         source=source,
         confidence=confidence,
         data_sources_summary=DATA_SOURCE_NOTE,
+        listed=spec.get("listed", True),
     )
     db.add(venue)
     db.flush()

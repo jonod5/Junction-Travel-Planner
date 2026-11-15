@@ -23,6 +23,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    true,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -92,6 +93,12 @@ class Venue(Base):
     # were never geocoded in the first place.
     external_ref: Mapped[str | None] = mapped_column(String(100))
     source: Mapped[str | None] = mapped_column(String(50))
+
+    # Whether the venue appears in the app's lists (GET /api/venues — map
+    # pins, search, pickers). This is a scope switch, not a data-quality
+    # flag: hidden venues stay in the database, stay reachable by id, and
+    # keep flowing through the enrichment/review pipeline.
+    listed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default=true())
 
     # Relationships
     parking_options: Mapped[list["ParkingOption"]] = relationship(

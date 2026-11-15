@@ -151,14 +151,19 @@ def _strip_provenance(text: str | None) -> str | None:
 @router.get("", response_model=list[VenueListItemOut])
 def list_venues(db: Session = Depends(get_db)):
     """
-    Every venue with coordinates — just enough for a map pin or picker list.
-    Includes both the 6 hand-collected venues and any registered via
-    app/register_venues.py; no reviewed-status filtering here, since a
-    venue's own name/location isn't the kind of unverified content the
-    reviewed flag exists to gate (that's parking/transit/congestion detail,
-    served by GET /api/venues/{id}).
+    Every *listed* venue with coordinates — just enough for a map pin or
+    picker list. Covers both the 6 hand-collected venues and any registered
+    via app/register_venues.py, minus those flagged listed=False (out of the
+    LA Metro-served scope — see Venue.listed). Hidden venues are not deleted:
+    GET /api/venues/{id} still serves them, so saved itineraries and the
+    enrichment/review pipeline keep working. No reviewed-status filtering
+    here, since a venue's own name/location isn't the kind of unverified
+    content the reviewed flag exists to gate (that's parking/transit/
+    congestion detail, served by GET /api/venues/{id}).
     """
-    venues = db.execute(select(Venue).where(Venue.lat.is_not(None), Venue.lng.is_not(None))).scalars().all()
+    venues = db.execute(
+        select(Venue).where(Venue.listed.is_(True), Venue.lat.is_not(None), Venue.lng.is_not(None))
+    ).scalars().all()
     return [
         VenueListItemOut(
             id=v.id, name=v.name, sport_use=v.sport_use, zone=v.zone,

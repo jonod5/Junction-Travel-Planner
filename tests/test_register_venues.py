@@ -158,3 +158,39 @@ class TestRegisterVenue:
         outcome = register_venue(db, spec)
 
         assert outcome.status == "skipped_duplicate"
+
+
+class TestListedFlag:
+    """`listed` is set when a row is first created and never touched on a re-run."""
+
+    HIDDEN = dict(SPEC, external_ref="honda-center", name="Honda Center", listed=False)
+
+    def test_new_venue_defaults_to_listed(self, db):
+        with patch("app.register_venues.geocode_address", return_value=_result()):
+            outcome = register_venue(db, SPEC)
+        db.commit()
+        assert db.get(Venue, outcome.venue_id).listed is True
+
+    def test_listed_false_spec_registers_hidden(self, db):
+        with patch("app.register_venues.geocode_address", return_value=_result()):
+            outcome = register_venue(db, self.HIDDEN)
+        db.commit()
+        assert db.get(Venue, outcome.venue_id).listed is False
+
+    def test_rerun_does_not_flip_hidden_venue_back_to_listed(self, db):
+        with patch("app.register_venues.geocode_address", return_value=_result()):
+            first = register_venue(db, self.HIDDEN)
+            db.commit()
+            second = register_venue(db, self.HIDDEN)
+            db.commit()
+        assert second.status == "skipped_existing"
+        assert db.get(Venue, first.venue_id).listed is False
+
+    def test_rerun_with_a_spec_lacking_the_flag_leaves_a_hidden_row_hidden(self, db):
+        # e.g. a row the 0017 migration hid, re-registered from a spec without listed=False
+        db.add(Venue(name="Honda Center", external_ref="honda-center", lat=33.8, lng=-117.9, listed=False))
+        db.commit()
+        outcome = register_venue(db, dict(SPEC, external_ref="honda-center", name="Honda Center"))
+        db.commit()
+        assert outcome.status == "skipped_existing"
+        assert db.get(Venue, outcome.venue_id).listed is False
