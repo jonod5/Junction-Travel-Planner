@@ -141,6 +141,30 @@ class TestEnrichVenue:
         assert row.rideshare_estimate_usd is not None
         assert venue.reviewed is True
 
+    @pytest.mark.parametrize("source,geocode_confidence", [
+        ("geocoded", "low"), ("geocoded", "medium"), ("geocoded", "high"), ("user_verified", "high"),
+    ])
+    def test_enrichment_keeps_a_registered_venues_geocode_confidence(self, db, source, geocode_confidence):
+        # Audit DATA-01: Venue.confidence is the geocode precision for a
+        # registered venue; enrichment must not overwrite it with "high".
+        venue = self._seed_venue_and_stop(db)
+        venue.source, venue.confidence = source, geocode_confidence
+        db.flush()
+
+        enrich_venue(db, venue)
+        enrich_venue(db, venue)  # and a re-run doesn't either
+        db.commit()
+
+        assert venue.confidence == geocode_confidence
+        assert venue.source == source
+        assert venue.reviewed is True  # the pipeline-ran marker is still set
+
+    def test_hand_collected_venue_still_gets_the_pipeline_marker(self, db):
+        venue = self._seed_venue_and_stop(db)
+        assert venue.source is None and venue.confidence is None
+        enrich_venue(db, venue)
+        assert venue.confidence == "high"
+
     def test_rerun_with_nothing_changed_touches_nothing(self, db):
         venue = self._seed_venue_and_stop(db)
         enrich_venue(db, venue)
