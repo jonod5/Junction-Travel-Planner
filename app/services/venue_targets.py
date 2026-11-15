@@ -35,6 +35,33 @@ ENTITY_MODELS = {
     "transit_access": TransitAccess,
 }
 
+# Every (entity_type, field) a review-queue draft is allowed to target — the
+# single source both tiers and the decision endpoint agree on:
+#   - the three prose entity types are what Tier-2 may draft
+#     (app.services.venue_extract.FIELD_SPEC is exactly this subset), and
+#   - transit_access lists the fields Tier-1 change detection diffs
+#     (app.services.venue_enrichment's _TEXT_DIFF_FIELDS / _NUMERIC_DIFF_TOLERANCES).
+# app/routers/venue_review.py refuses to apply a draft outside this table, so
+# a malformed or tampered queue row can never write to a column like
+# `reviewed`, `venue_id` or `source`.
+REVIEWABLE_FIELDS: dict[str, list[str]] = {
+    "parking_option": ["price_notes", "pricing_basis", "surge_notes", "notes"],
+    "curb_dropoff": [
+        "rideshare_zone_description", "rideshare_zone_open_window", "taxi_accessible_zone",
+        "private_vehicle_dropoff", "no_stop_zones", "curbside_restrictions",
+    ],
+    "congestion_tdm": [
+        "arrival_notes", "high_congestion_entry_roads", "known_congestion_exit_roads", "general_tdm_notes",
+    ],
+    "transit_access": [
+        "line", "mode", "stop_name", "bus_lines_serving", "walk_time_min", "rideshare_estimate_usd",
+    ],
+}
+
+
+def is_reviewable(entity_type: str, field_name: str) -> bool:
+    return field_name in REVIEWABLE_FIELDS.get(entity_type, ())
+
 
 def find_target_row(db: Session, venue_id: int, entity_type: str, entity_id: int | None = None):
     """Read-only lookup — never creates a row. Returns None if nothing exists yet."""

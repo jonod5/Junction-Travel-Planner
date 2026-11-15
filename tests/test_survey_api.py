@@ -252,3 +252,10 @@ def test_export_returns_long_format_csv_with_chosen_flag(client):
     chosen_flags = [row.split(",")[4] for row in data_rows]
     assert chosen_flags.count("1") == 1
     assert chosen_flags.count("0") == len(task["alternatives"]) - 1
+
+
+def test_unset_admin_key_disables_export_without_naming_the_variable(client, monkeypatch):
+    monkeypatch.delenv("SP_ADMIN_KEY", raising=False)
+    resp = client.get(f"/api/survey/{client.survey_id}/export", headers={"X-Admin-Key": "test-admin-key"})
+    assert resp.status_code == 503
+    assert "SP_ADMIN_KEY" not in resp.text

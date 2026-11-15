@@ -58,7 +58,7 @@ from sqlalchemy.orm import Session
 
 from app.cache import get_redis
 from app.models.venue import Venue, VenueExtraction
-from app.services.venue_targets import find_target_row
+from app.services.venue_targets import REVIEWABLE_FIELDS, find_target_row
 
 log = logging.getLogger(__name__)
 
@@ -79,14 +79,8 @@ LLM_TIMEOUT_S = 120.0
 # row per venue for each entity_type. See module docstring for why
 # structured/numeric fields are excluded.
 FIELD_SPEC: dict[str, list[str]] = {
-    "parking_option": ["price_notes", "pricing_basis", "surge_notes", "notes"],
-    "curb_dropoff": [
-        "rideshare_zone_description", "rideshare_zone_open_window", "taxi_accessible_zone",
-        "private_vehicle_dropoff", "no_stop_zones", "curbside_restrictions",
-    ],
-    "congestion_tdm": [
-        "arrival_notes", "high_congestion_entry_roads", "known_congestion_exit_roads", "general_tdm_notes",
-    ],
+    entity_type: REVIEWABLE_FIELDS[entity_type]
+    for entity_type in ("parking_option", "curb_dropoff", "congestion_tdm")
 }
 
 _SYSTEM_PROMPT = f"""You extract structured venue-logistics facts from a source web page for a \

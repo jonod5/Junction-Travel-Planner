@@ -27,7 +27,6 @@ import csv
 import hashlib
 import io
 import logging
-import os
 import random
 from datetime import datetime, timezone
 
@@ -37,6 +36,7 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.admin import check_admin_key
 from app.auth import get_current_user_optional
 from app.db import get_db
 from app.models.sp import SPAlternative, SPChoiceTask, SPRespondent, SPResponse, SPSurvey
@@ -215,14 +215,6 @@ def complete_session(respondent_id: str, db: Session = Depends(get_db)):
     return CompleteResponse(respondent_id=respondent.id, completed_at=respondent.completed_at)
 
 
-def _check_admin_key(x_admin_key: str | None) -> None:
-    expected = os.environ.get("SP_ADMIN_KEY")
-    if not expected:
-        raise HTTPException(status_code=500, detail="SP_ADMIN_KEY is not configured")
-    if not x_admin_key or x_admin_key != expected:
-        raise HTTPException(status_code=401, detail="Missing or invalid X-Admin-Key")
-
-
 @router.get("/{survey_id}/export")
 def export_responses(
     survey_id: int,
@@ -236,7 +228,7 @@ def export_responses(
     alternative a respondent saw is its own row, not pivoted wide, so the
     column set stays fixed regardless of how many alternatives a task has.
     """
-    _check_admin_key(x_admin_key)
+    check_admin_key("SP_ADMIN_KEY", x_admin_key)
 
     survey = db.get(SPSurvey, survey_id)
     if not survey:
