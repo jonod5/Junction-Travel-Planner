@@ -8,6 +8,7 @@ input and maps engine errors to HTTP status codes.
 
 import logging
 import os
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -37,13 +38,15 @@ class RouteOptimizeRequest(BaseModel):
     destination: Coord
     # Allowed primary mode keys (see route_engine.MODE_LABEL).  None/empty means
     # "all modes allowed".  Modes not listed are filtered out before scoring.
-    preferences: list[str] | None = None
+    # Unknown keys are harmless (no candidate uses them) but the list is bounded.
+    preferences: list[Annotated[str, Field(max_length=20)]] | None = Field(None, max_length=12)
     # Unix seconds; honoured for transit backbones (cache-bucketed to 5 min).
-    departure_time: int | None = None
+    # Bounded to a sane range (up to the year 2100) — it goes into a cache key.
+    departure_time: int | None = Field(None, ge=0, le=4_102_444_800)
     # App locale code (see frontend/lib/i18n.ts); forwarded to Google so
     # turn-by-turn steps come back in the caller's language. Unsupported or
     # missing falls back to English (app.routers.directions._normalize_language).
-    language: str | None = None
+    language: str | None = Field(None, max_length=10)
 
 
 @router.post("/optimize", dependencies=[Depends(rate_limit("routes_optimize", OPTIMIZE_RATE_LIMIT, 60))])

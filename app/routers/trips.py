@@ -32,11 +32,13 @@ import hmac
 import secrets
 
 from fastapi import APIRouter, Depends, Header, HTTPException
+from pydantic import conlist
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models.trip import Leg, Stop, Trip
 from app.schemas import (
+    MAX_STOPS_PER_REQUEST,
     LegOut,
     LegUpsert,
     StopCreate,
@@ -150,7 +152,11 @@ def remove_stop(stop_id: int, trip: Trip = Depends(_get_trip_or_404), db: Sessio
 
 
 @router.patch("/{trip_id}/stops/reorder", response_model=TripOut)
-def reorder_stops(body: list[StopReorder], trip: Trip = Depends(_get_trip_or_404), db: Session = Depends(get_db)):
+def reorder_stops(
+    body: conlist(StopReorder, max_length=MAX_STOPS_PER_REQUEST),  # type: ignore[valid-type]
+    trip: Trip = Depends(_get_trip_or_404),
+    db: Session = Depends(get_db),
+):
     """
     Update order_index for multiple stops in one transaction.
 

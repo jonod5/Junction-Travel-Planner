@@ -54,7 +54,6 @@ from app.services.venue_targets import get_or_create_target_row
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/venues/review-queue", tags=["venue-review"])
 
-_VALID_DECISIONS = {"approve", "edit", "reject"}
 _PENDING_STATUSES = {"pending", "pending_change"}
 
 
@@ -80,7 +79,7 @@ def _confidence_label(score: Decimal | float | None) -> str | None:
 @router.get("", response_model=list[VenueExtractionOut])
 def list_review_queue(
     venue_id: int | None = Query(None),
-    status: str = Query("pending"),
+    status: str = Query("pending", max_length=20),
     db: Session = Depends(get_db),
     x_admin_key: str | None = Header(default=None),
 ):
@@ -148,9 +147,6 @@ def decide(
     x_admin_key: str | None = Header(default=None),
 ):
     _check_admin_key(x_admin_key)
-
-    if body.decision not in _VALID_DECISIONS:
-        raise HTTPException(status_code=422, detail=f"decision must be one of {sorted(_VALID_DECISIONS)}")
 
     draft = db.get(VenueExtraction, extraction_id)
     if not draft:

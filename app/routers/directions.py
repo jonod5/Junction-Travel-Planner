@@ -295,12 +295,21 @@ def _extract_steps(leg: dict, language: str = DEFAULT_LANGUAGE) -> list[dict]:
     return steps
 
 
+# The public endpoint takes coordinates only. Google would happily geocode a
+# free-text place name here, which costs more per call and gives every
+# distinct string its own cache entry. (Internal callers of fetch_directions
+# always pass coordinates already.)
+_LATLNG_PATTERN = r"^\s*-?\d{1,2}(\.\d+)?\s*,\s*-?\d{1,3}(\.\d+)?\s*$"
+
+
 @router.get("/api/directions", dependencies=[Depends(rate_limit("directions", DIRECTIONS_RATE_LIMIT, 60))])
 def get_directions(
-    origin: str = Query(..., description="lat,lng of the start point"),
-    destination: str = Query(..., description="lat,lng of the end point"),
+    origin: str = Query(..., pattern=_LATLNG_PATTERN, max_length=50, description="lat,lng of the start point"),
+    destination: str = Query(..., pattern=_LATLNG_PATTERN, max_length=50, description="lat,lng of the end point"),
     mode: TravelMode = Query(TravelMode.transit, description="Travel mode"),
-    language: str | None = Query(None, description="App locale code (en/es/fr/zh-Hans); unsupported falls back to en"),
+    language: str | None = Query(
+        None, max_length=10, description="App locale code (en/es/fr/zh-Hans); unsupported falls back to en",
+    ),
 ):
     """
     Proxy Google Directions and return trimmed routing data.

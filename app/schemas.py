@@ -13,8 +13,16 @@ Design choices:
 """
 
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+# Request-body bounds. Lengths match the column widths in app/models/trip.py
+# (a longer value would otherwise reach Postgres and come back as a 500).
+NAME_MAX = 200
+MODE_MAX = 20
+POLYLINE_MAX = 200_000   # an encoded polyline for a cross-county route is ~10-30k chars
+MAX_STOPS_PER_REQUEST = 200
 
 
 # ── Leg ─────────────────────────────────────────────────────────────────────
@@ -35,24 +43,24 @@ class LegUpsert(BaseModel):
     """Body for creating or replacing a leg between two stops."""
     from_stop_id: int
     to_stop_id: int
-    mode: str
-    distance_m: int | None = None
-    duration_s: int | None = None
-    polyline: str | None = None
+    mode: str = Field(..., min_length=1, max_length=MODE_MAX)
+    distance_m: int | None = Field(None, ge=0, le=100_000_000)
+    duration_s: int | None = Field(None, ge=0, le=10_000_000)
+    polyline: str | None = Field(None, max_length=POLYLINE_MAX)
 
 
 # ── Stop ─────────────────────────────────────────────────────────────────────
 
 class StopCreate(BaseModel):
     venue_id: int | None = None
-    name: str
-    lat: float
-    lng: float
+    name: str = Field(..., min_length=1, max_length=NAME_MAX)
+    lat: float = Field(..., ge=-90, le=90)
+    lng: float = Field(..., ge=-180, le=180)
 
 
 class StopReorder(BaseModel):
     stop_id: int
-    order_index: int
+    order_index: int = Field(..., ge=0, le=100_000)
 
 
 class StopOut(BaseModel):
@@ -69,11 +77,11 @@ class StopOut(BaseModel):
 # ── Trip ─────────────────────────────────────────────────────────────────────
 
 class TripCreate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=NAME_MAX)
 
 
 class TripUpdate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=NAME_MAX)
 
 
 class TripOut(BaseModel):
@@ -178,9 +186,9 @@ class VenueExtractionOut(BaseModel):
 
 class ReviewDecisionIn(BaseModel):
     """Body for POST /api/venues/review-queue/{id}/decision."""
-    decision: str  # "approve" | "edit" | "reject"
-    corrected_value: str | None = None
-    reviewed_by: str | None = None
+    decision: Literal["approve", "edit", "reject"]
+    corrected_value: str | None = Field(None, max_length=20_000)
+    reviewed_by: str | None = Field(None, max_length=100)
 
 
 class VenueListItemOut(BaseModel):
