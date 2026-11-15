@@ -267,3 +267,23 @@ def test_missing_maps_key_raises_500(monkeypatch):
     with pytest.raises(DirectionsError) as exc:
         route_engine.optimize(ORIGIN, DEST)
     assert exc.value.status_code == 500
+
+
+# ── Unknown vehicle types (audit BUG-01) ─────────────────────────────────────
+
+def test_ebike_nearby_does_not_crash_the_engine(monkeypatch):
+    # GBFS reports e-bikes as "ebike" (live Bird feed, Venice), a type the
+    # engine has no mode for. This used to raise KeyError → HTTP 500.
+    patch_engine(monkeypatch, types={"ebike"})
+    res = route_engine.optimize(ORIGIN, DEST)
+    ids = [o["id"] for o in res["options"]]
+    assert "transit" in ids
+    assert not any("ebike" in i for i in ids)
+
+
+def test_ebike_alongside_known_types_changes_nothing(monkeypatch):
+    patch_engine(monkeypatch, types={"scooter", "bike"})
+    without = route_engine.optimize(ORIGIN, DEST)
+    patch_engine(monkeypatch, types={"scooter", "bike", "ebike"})
+    with_ebike = route_engine.optimize(ORIGIN, DEST)
+    assert with_ebike == without
