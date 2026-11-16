@@ -5,10 +5,11 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy requirements first (Docker caches this layer — speeds up rebuilds)
-COPY requirements.txt .
+COPY requirements.txt constraints.txt ./
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies at the exact versions in constraints.txt, so a rebuild
+# can't pull in a newer release than the one that was tested.
+RUN pip install --no-cache-dir -r requirements.txt -c constraints.txt
 
 # Run as an unprivileged user — nothing the API does needs root, and a
 # compromised process shouldn't get it for free.

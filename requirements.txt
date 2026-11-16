@@ -30,8 +30,8 @@ PyJWT[crypto]>=2.15.0
 anyio>=4.14.2
 certifi>=2026.10.18
 
-# NOTE: everything else is unpinned, so a build installs whatever is newest
-# that day and can't be reproduced later. The next step is a lock file
-# (pip-compile / uv lock) checked in next to this one.
+# Exact versions (including transitive dependencies) are pinned in
+# constraints.txt, which the Dockerfile and CI pass with -c. Add new packages
+# here, then regenerate constraints.txt as its header describes.
 #
 # Lint and test tools live in requirements-dev.txt — not installed in the image.
