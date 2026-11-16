@@ -78,7 +78,7 @@ def _validate_tier2(venue: Venue) -> dict:
         except (ExtractionError, anthropic.APIError, httpx.HTTPError) as exc:
             errors.append(f"{url}: {exc}")
             continue
-        fields_found += sum(1 for raw in raw_fields if _validate_field(raw))
+        fields_found += sum(1 for raw in raw_fields if _validate_field(raw, page_text))
 
     return {"ok": True, "urls_checked": len(urls), "fields_found": fields_found, "errors": errors}
 

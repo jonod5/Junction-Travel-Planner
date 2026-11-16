@@ -14,7 +14,7 @@ because operators version their feed trees differently:
   • Spin             — free-floating scooters / e-bikes
   • Metro Bike Share — docked bikes (stations)
 
-Design choices mirror gtfs_rt.py:
+Design choices mirror transit_rt.py:
   • Cache each feed's raw payload in Redis under gbfs:{provider}:{feed} with a
     TTL = min(feed ttl, 60s); every request reads cache-first.
   • One provider (or one feed) failing never sinks the others — errors are

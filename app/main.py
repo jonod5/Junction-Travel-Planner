@@ -66,11 +66,24 @@ async def lifespan(_app: FastAPI):
     # Nothing to tear down; SQLAlchemy connection pool closes automatically.
 
 
+def _docs_enabled() -> bool:
+    """Interactive API docs (/docs, /redoc, /openapi.json) are on unless
+    API_DOCS_ENABLED is set to a false value — set it to "false" on the
+    public deployment so the full route and schema listing isn't served to
+    anyone who asks."""
+    return os.environ.get("API_DOCS_ENABLED", "true").strip().lower() not in ("0", "false", "no", "off")
+
+
+_DOCS = _docs_enabled()
+
 app = FastAPI(
     title="Junction API",
     description="Multi-modal trip planning for Olympic venues",
     version="0.1.0",
     lifespan=lifespan,
+    docs_url="/docs" if _DOCS else None,
+    redoc_url="/redoc" if _DOCS else None,
+    openapi_url="/openapi.json" if _DOCS else None,
 )
 
 _default_origins = [

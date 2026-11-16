@@ -16,8 +16,8 @@ No network — httpx.Client and Redis are both faked.
 
 import pytest
 
-from app.routers import directions as directions_mod
-from app.routers.directions import (
+from app.services import directions as directions_mod
+from app.services.directions import (
     DirectionsError,
     _cache_key,
     _clean_instruction,
@@ -46,7 +46,7 @@ def test_normalize_language_falls_back_to_english():
 
 
 def test_google_language_maps_zh_hans_to_zh_cn():
-    from app.routers.directions import _GOOGLE_LANGUAGE
+    from app.services.directions import _GOOGLE_LANGUAGE
 
     assert _GOOGLE_LANGUAGE["zh-Hans"] == "zh-CN"
     assert _GOOGLE_LANGUAGE["en"] == "en"

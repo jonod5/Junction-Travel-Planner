@@ -126,7 +126,7 @@ def create_itinerary(
 @router.get("", response_model=ItineraryListOut)
 def list_itineraries(
     status: Literal["upcoming", "past", "all"] = "all",
-    tag: str | None = None,
+    tag: str | None = Query(None, max_length=50),
     sort: Literal["trip_date", "created_at", "updated_at"] = "trip_date",
     order: Literal["asc", "desc"] = "asc",
     limit: int = Query(20, ge=1, le=100),

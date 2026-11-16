@@ -1,6 +1,6 @@
 # Junction: LA Trip Planner
 
-A transit-first, multi-modal trip-planning application for visitors to events in Los Angeles. The app helps a visitor who is unfamiliar with Los Angeles figure out how to reach each venue by public transit, walking, shared bikes and scooters, park-and-ride, and ride-hailing, and compares those options by travel time, cost, and number of transfers.
+A transit-first, multi-modal trip-planning application for visitors to events in Los Angeles. The app helps a visitor who is unfamiliar with Los Angeles figure out how to reach each venue by public transit, walking, shared bikes and scooters, and ride-hailing, and compares those options by travel time, cost, and number of transfers.
 
 Built as the engineering deliverable of a UCLA Samueli **Summer Undergraduate Research Program (SURP) 2026** project under Prof. Youngseo Kim (Civil & Environmental Engineering). The application also serves as the foundation for a second research purpose: a stated-preference (SP) travel-survey platform for studying traveler mode choice under car-free Games conditions.
 
@@ -8,7 +8,7 @@ Built as the engineering deliverable of a UCLA Samueli **Summer Undergraduate Re
 
 ## Features
 
-- **Multi-modal route optimization engine** — composes candidate itineraries per leg (transit backbone + walk / bike / scooter access, micromobility-only, ride-hailing, park-and-ride) and ranks them with a deterministic weighted score over travel time, fare cost, and transfers, adjusted to the traveler's mode preferences. Scoring is rule-based and reproducible (no LLM in the ranking path).
+- **Multi-modal route optimization engine** — composes candidate itineraries per leg (transit backbone + walk / bike / scooter access, micromobility-only, ride-hailing, Metro Micro) and ranks them with a deterministic weighted score over travel time, fare cost, and transfers, adjusted to the traveler's mode preferences. Scoring is rule-based and reproducible (no LLM in the ranking path).
 - **Live data integration** — LA Metro transit, real-time vehicle positions via Swiftly (GTFS-RT), and live shared bike/scooter availability via public GBFS feeds (Bird, Spin, Metro Bike Share). Metro Micro (on-demand microtransit) is included as a zone-limited option.
 - **Hand-collected venue data** — source-verified parking, curb/drop-off, transit-access, and congestion information for the core venues, with a Games-time "no spectator parking" framing.
 - **Unified planner UI** — a single full-bleed map screen: search venues/airports, build an itinerary, and compare ranked route options in one place. Responsive down to phone width (bottom-sheet layout) with an installable PWA manifest.
@@ -82,13 +82,27 @@ Set in `.env` (backend) unless noted. **Never commit real values** — `.env` is
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | Local Postgres credentials |
 | `DATABASE_URL` | Postgres connection string |
 | `REDIS_URL` | Redis connection string |
-| `GOOGLE_MAPS_API_KEY` | Google Maps Platform (Directions, Places) — **server-side only** |
-| `GTFS_STATIC_URLS` / `GTFS_RT_VEHICLES_URLS` / `GTFS_RT_API_KEY` | LA Metro GTFS static + real-time feeds |
-| `SWIFTLY_API_KEY` | Swiftly real-time transit (GTFS-RT vehicle positions) — **server-side only** |
-| `SPIN_GBFS_BASE_URL` / `BIRD_GBFS_BASE_URL` / `LA_METRO_GBFS_BASE_URL` | Public micromobility GBFS feed roots |
-| `GEMINI_API_KEY` | Optional assistant (Gemini) |
+| `GOOGLE_MAPS_API_KEY` | Google Maps Platform (Directions, Places, Geocoding) — **server-side only**. Restrict it to those three APIs. |
+| `GTFS_STATIC_URLS` | LA Metro GTFS static feed zips (comma-separated), for `python -m app.ingest.gtfs_static` |
+| `SWIFTLY_API_KEY` / `SWIFTLY_AGENCIES` | Swiftly real-time transit (GTFS-RT vehicle positions) — **server-side only** |
+| `GBFS_PROVIDER_ROOTS` | Optional override of the built-in Bird / Spin / Metro Bike Share GBFS roots (`bird=<url>,spin=<url>`) |
 | `SUPABASE_URL` / `SUPABASE_JWT_SECRET` / `SUPABASE_SERVICE_KEY` | Supabase auth — verification + admin; **server-side only** |
+| `CORS_ORIGINS` | Extra allowed browser origins (comma-separated), e.g. the deployed frontend |
+| `RATE_LIMIT_TRUSTED_PROXY_HOPS` | Number of reverse proxies in front of the API, so rate limits key on the real client address (see `app/rate_limit.py`). `0` locally. |
+| `RATE_LIMIT_GLOBAL_PER_MIN` / `RATE_LIMIT_DIRECTIONS_PER_MIN` / `RATE_LIMIT_OPTIMIZE_PER_MIN` / `RATE_LIMIT_PLACES_PER_MIN` / `RATE_LIMIT_SURVEY_SESSION_PER_MIN` | Optional rate-limit overrides |
+| `API_DOCS_ENABLED` | Set to `false` on a public deployment to turn off `/docs`, `/redoc` and `/openapi.json` |
+| `VENUE_ADMIN_KEY` | Shared secret for the venue review queue (`X-Admin-Key`). Unset = endpoint off. |
+| `SP_ADMIN_KEY` | Shared secret for the survey CSV export (`X-Admin-Key`). Unset = endpoint off. |
+| `ANTHROPIC_API_KEY` / `VENUE_EXTRACT_MODEL` | Tier-2 venue extraction CLI (`python -m app.extract_venue`) only |
+| `DB_POOL_SIZE` / `DB_MAX_OVERFLOW` / `DB_POOL_TIMEOUT` / `WEB_CONCURRENCY` | Optional connection-pool and worker tuning |
+
+Frontend (`frontend/.env.local`, and the Vercel project settings):
+
+| Variable | Purpose |
+|---|---|
 | `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase values for the frontend (anon key is public by design) |
+| `EXPO_PUBLIC_GOOGLE_MAPS_KEY` | Browser key for the Maps JavaScript SDK. It ships in the public bundle, so it must be a **separate key** from the server one, restricted to your site's HTTP referrers and to the Maps JavaScript API only. |
+| `EXPO_PUBLIC_API_URL` | Backend URL for native or local dev. Leave unset on Vercel (the `/api` rewrite is used). |
 
 ## Research context
 

@@ -147,3 +147,60 @@ def test_middleware_blocks_over_limit(app_client):
 def test_middleware_exempts_health(app_client):
     for _ in range(10):
         assert app_client.get("/health").status_code == 200
+
+
+# ── _client_key behind reverse proxies (audit SEC-03) ────────────────────────
+
+def _proxied(xff: str | None, peer: str = "10.0.0.1") -> SimpleNamespace:
+    headers = {"x-forwarded-for": xff} if xff is not None else {}
+    return SimpleNamespace(client=SimpleNamespace(host=peer), headers=headers)
+
+
+def test_default_ignores_forwarded_header(monkeypatch):
+    monkeypatch.delenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", raising=False)
+    assert rl._client_key(_proxied("203.0.113.9")) == "10.0.0.1"
+
+
+def test_one_trusted_hop_uses_rightmost_entry(monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", "1")
+    assert rl._client_key(_proxied("203.0.113.9")) == "203.0.113.9"
+
+
+def test_spoofed_leading_entries_are_ignored(monkeypatch):
+    # A caller can prepend anything; only what the trusted proxy appended counts.
+    monkeypatch.setenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", "1")
+    assert rl._client_key(_proxied("1.1.1.1, 2.2.2.2, 203.0.113.9")) == "203.0.113.9"
+
+
+def test_two_trusted_hops_uses_second_from_right(monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", "2")
+    assert rl._client_key(_proxied("spoofed, 203.0.113.9, 76.76.21.21")) == "203.0.113.9"
+
+
+def test_falls_back_to_peer_when_header_is_too_short(monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", "2")
+    assert rl._client_key(_proxied("203.0.113.9")) == "10.0.0.1"
+    assert rl._client_key(_proxied(None)) == "10.0.0.1"
+    assert rl._client_key(_proxied("  ,  ")) == "10.0.0.1"
+
+
+def test_invalid_hops_setting_means_no_trust(monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", "many")
+    assert rl._client_key(_proxied("203.0.113.9")) == "10.0.0.1"
+
+
+def test_forwarded_value_is_bounded(monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", "1")
+    assert len(rl._client_key(_proxied("x" * 5000))) == 64
+
+
+def test_two_clients_behind_one_proxy_get_separate_buckets(monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_TRUSTED_PROXY_HOPS", "1")
+    fake = FakeRedis()
+    monkeypatch.setattr(rl, "get_redis", lambda: fake)
+    dep = rl.rate_limit("scope", max_requests=1, window_s=60)
+    dep(_proxied("203.0.113.1"))
+    dep(_proxied("203.0.113.2"))  # different client, same proxy peer — must not 429
+    with pytest.raises(HTTPException) as exc:
+        dep(_proxied("203.0.113.1"))
+    assert exc.value.status_code == 429

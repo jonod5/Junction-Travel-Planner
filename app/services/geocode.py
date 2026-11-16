@@ -1,7 +1,7 @@
 """
 Server-side Google Geocoding proxy — used only by app/register_venues.py to
 turn a venue name into coordinates. Same backend-proxy pattern as
-app/routers/places.py and app/routers/directions.py: the key never leaves
+app/routers/places.py and app/services/directions.py: the key never leaves
 the server.
 
 Precision matters here more than for a one-off Places search — Tier-1
@@ -16,12 +16,12 @@ silently upgrades or hides one.
 from __future__ import annotations
 
 import logging
-import os
 from dataclasses import dataclass
 
 import httpx
 
 from app.cache import get_redis
+from app.config import maps_api_key
 
 log = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class GeocodeError(Exception):
 
 
 def _api_key() -> str | None:
-    return os.environ.get("GOOGLE_MAPS_KEY") or os.environ.get("GOOGLE_MAPS_API_KEY")
+    return maps_api_key()
 
 
 @dataclass

@@ -26,6 +26,8 @@ def get_vehicles():
 
 
 @router.get("/api/transit/live")
-def transit_live(line: str = Query(..., description="Transit line label, e.g. 'A Line' or '720'")):
+def transit_live(
+    line: str = Query(..., min_length=1, max_length=100, description="Transit line label, e.g. 'A Line' or '720'"),
+):
     """Live running status for a single transit line."""
     return transit_rt.live_status_for_line(line)

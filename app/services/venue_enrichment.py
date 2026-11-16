@@ -59,7 +59,7 @@ from app.ingest.gbfs import haversine_m
 from app.ingest.osm import nearby_context, summarize_context
 from app.models.gtfs import GtfsRoute, GtfsStop, GtfsStopTime, GtfsTrip
 from app.models.venue import TransitAccess, Venue, VenueExtraction
-from app.routers.directions import DirectionsError, fetch_directions
+from app.services.directions import DirectionsError, fetch_directions
 from app.services.fares import rideshare_estimate
 
 log = logging.getLogger(__name__)
@@ -387,7 +387,16 @@ def enrich_venue(
         changes_flagged += 1
 
     venue.retrieved_at = now
-    venue.confidence = "high"
+    # For a registered venue (source = "geocoded" / "user_verified"),
+    # Venue.confidence is the precision of its COORDINATES — "low" marks a
+    # geocode Google could only place approximately (see
+    # app/register_venues.py and app/services/geocode.py). That label has to
+    # survive enrichment: this module searches a radius around those very
+    # coordinates, and stamping "high" here used to erase the one signal
+    # that they were imprecise. Hand-collected venues (source is None) have
+    # no such label, so they keep the original pipeline-ran marker.
+    if venue.source is None:
+        venue.confidence = "high"
     venue.reviewed = True
 
     return EnrichmentResult(

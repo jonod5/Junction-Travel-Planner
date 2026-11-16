@@ -53,6 +53,7 @@ import { linksForModes, type Place } from '@/lib/deeplinks';
 // i18next.t() directly rather than the useTranslation() hook.
 import i18next from '@/lib/i18n';
 import { clearPendingSave, readPendingSave, stashPendingSave } from '@/lib/pendingSave';
+import { escapeHtml, safeHexColor } from '@/lib/html';
 import { decodePolyline, formatDistance, formatDuration } from '@/lib/polyline';
 import { ROUTE_MODES, useTrip } from '@/lib/store';
 import { useVenues } from '@/lib/useVenues';
@@ -210,8 +211,8 @@ function liveInfoHtml(item: MicromobilityItem): string {
   return [
     `<div style="font-family:system-ui,sans-serif;max-width:220px;line-height:1.5;padding:2px 0">`,
     `<div style="display:inline-block;background:${fill};color:#fff;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;margin-bottom:5px">${i18next.t('planner.map.liveBadge', { type: liveVehicleTypeLabel(item.vehicle_type) })}</div>`,
-    `<div style="font-size:12px;font-weight:700;color:#1F2937">${item.name ?? providerName}</div>`,
-    `<div style="font-size:11px;color:#4B5563">${providerName}</div>`,
+    `<div style="font-size:12px;font-weight:700;color:#1F2937">${escapeHtml(item.name ?? providerName)}</div>`,
+    `<div style="font-size:11px;color:#4B5563">${escapeHtml(providerName)}</div>`,
     item.kind === 'station' && count != null
       ? `<div style="font-size:11px;color:#6B7280;margin-top:2px">${i18next.t('planner.map.availableCount', { count })}${item.num_docks_available != null ? ` · ${i18next.t('planner.map.docksCount', { count: item.num_docks_available })}` : ''}</div>`
       : `<div style="font-size:11px;color:#6B7280;margin-top:2px">${i18next.t('planner.map.availableNow')}</div>`,
@@ -229,17 +230,17 @@ const VENUE_NAME: Record<number, string> = {
 function transitInfoHtml(point: VenueTransitPoint): string {
   const { fill } = TRANSIT_LAYER_CONFIG[point.type];
   const displayName = i18next.t(`transitLegend.${point.type}`);
-  const venueLabel = point.venueIds.map((id) => VENUE_NAME[id]).filter(Boolean).join(' · ');
+  const venueLabel = escapeHtml(point.venueIds.map((id) => VENUE_NAME[id]).filter(Boolean).join(' · '));
   return [
     `<div style="font-family:system-ui,sans-serif;max-width:230px;line-height:1.5;padding:2px 0">`,
     `<div style="display:inline-block;background:${fill};color:#fff;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700;margin-bottom:5px">${displayName}</div>`,
-    `<div style="font-size:12px;font-weight:700;color:#1F2937;margin-bottom:2px">${point.name}</div>`,
-    point.lines?.length ? `<div style="font-size:11px;color:#4B5563">${point.lines.join(' · ')}</div>` : '',
-    point.providers?.length ? `<div style="font-size:11px;color:#4B5563">${point.providers.join(' · ')}</div>` : '',
+    `<div style="font-size:12px;font-weight:700;color:#1F2937;margin-bottom:2px">${escapeHtml(point.name)}</div>`,
+    point.lines?.length ? `<div style="font-size:11px;color:#4B5563">${escapeHtml(point.lines.join(' · '))}</div>` : '',
+    point.providers?.length ? `<div style="font-size:11px;color:#4B5563">${escapeHtml(point.providers.join(' · '))}</div>` : '',
     point.walkMin != null
       ? `<div style="font-size:11px;color:#6B7280;margin-top:2px">🚶 ${i18next.t('planner.map.walkMinLabel', { min: point.walkMin })} · ${venueLabel}</div>`
       : venueLabel ? `<div style="font-size:11px;color:#6B7280;margin-top:2px">${i18next.t('planner.map.near', { label: venueLabel })}</div>` : '',
-    point.note ? `<div style="font-size:11px;color:#9CA3AF;margin-top:3px">${point.note}</div>` : '',
+    point.note ? `<div style="font-size:11px;color:#9CA3AF;margin-top:3px">${escapeHtml(point.note)}</div>` : '',
     `</div>`,
   ].join('');
 }
@@ -252,19 +253,19 @@ function hoverHtml(step: RenderStep): string {
     const dur = step.duration_s > 0 ? formatDuration(step.duration_s) : '';
     const meta = [dist, dur].filter(Boolean).join(' · ');
     return `<div style="font-family:system-ui,sans-serif;max-width:220px;line-height:1.5">
-      <div style="font-size:12px;font-weight:600;color:#1F2937">${step.instruction || i18next.t('common.walk')}</div>
+      <div style="font-size:12px;font-weight:600;color:#1F2937">${escapeHtml(step.instruction || i18next.t('common.walk'))}</div>
       ${meta ? `<div style="font-size:11px;color:#6B7280;margin-top:2px">${meta}</div>` : ''}
     </div>`;
   }
   if (step.mode === 'transit') {
-    const color = step.transit_color || colors.secondary;
+    const color = safeHexColor(step.transit_color, colors.secondary);
     return `<div style="font-family:system-ui,sans-serif;max-width:240px;line-height:1.5">
       <div style="display:inline-block;background:${color};color:#fff;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:5px">
-        ${step.transit_line_short ?? step.transit_line ?? i18next.t('modes.shortLabel.transit')}
+        ${escapeHtml(step.transit_line_short ?? step.transit_line ?? i18next.t('modes.shortLabel.transit'))}
       </div>
-      <div style="font-size:12px;font-weight:600;color:#1F2937">${step.transit_line ?? ''}${step.headsign ? ` → ${step.headsign}` : ''}</div>
-      ${step.departure_stop ? `<div style="font-size:11px;color:#555;margin-top:3px">🚉 ${i18next.t('common.board')}: <b>${step.departure_stop}</b></div>` : ''}
-      ${step.arrival_stop ? `<div style="font-size:11px;color:#555">🚉 ${i18next.t('common.exit')}: <b>${step.arrival_stop}</b></div>` : ''}
+      <div style="font-size:12px;font-weight:600;color:#1F2937">${escapeHtml(step.transit_line ?? '')}${step.headsign ? ` → ${escapeHtml(step.headsign)}` : ''}</div>
+      ${step.departure_stop ? `<div style="font-size:11px;color:#555;margin-top:3px">🚉 ${i18next.t('common.board')}: <b>${escapeHtml(step.departure_stop)}</b></div>` : ''}
+      ${step.arrival_stop ? `<div style="font-size:11px;color:#555">🚉 ${i18next.t('common.exit')}: <b>${escapeHtml(step.arrival_stop)}</b></div>` : ''}
       ${step.num_stops != null ? `<div style="font-size:11px;color:#9CA3AF;margin-top:2px">${i18next.t('common.stop', { count: step.num_stops })} · ${formatDuration(step.duration_s)}</div>` : ''}
     </div>`;
   }
@@ -275,7 +276,7 @@ function hoverHtml(step: RenderStep): string {
   const dist = step.distance_m > 0 ? formatDistance(step.distance_m) : '';
   const dur = step.duration_s > 0 ? formatDuration(step.duration_s) : '';
   return `<div style="font-family:system-ui,sans-serif;max-width:220px;line-height:1.5">
-    <div style="display:inline-block;background:${color};color:#fff;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:5px">${label}</div>
+    <div style="display:inline-block;background:${color};color:#fff;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:700;margin-bottom:5px">${escapeHtml(label)}</div>
     <div style="font-size:11px;color:#6B7280">${[dist, dur].filter(Boolean).join(' · ')}</div>
   </div>`;
 }
@@ -610,7 +611,7 @@ export default function UnifiedPlannerScreen() {
         }
         clickWindowRef.current?.setContent(
           `<div style="font-family:system-ui,sans-serif;padding:3px 2px">
-            <b style="font-size:13px">${i + 1}. ${s.name}</b>
+            <b style="font-size:13px">${i + 1}. ${escapeHtml(s.name)}</b>
           </div>`,
         );
         clickWindowRef.current?.open(map, marker);

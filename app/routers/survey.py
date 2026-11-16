@@ -37,10 +37,12 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.admin import check_admin_key
 from app.auth import get_current_user_optional
 from app.db import get_db
 from app.models.sp import SPAlternative, SPChoiceTask, SPRespondent, SPResponse, SPSurvey
 from app.models.user import User
+from app.rate_limit import rate_limit
 from app.schemas_sp import (
     AlternativeOut,
     ChoiceRequest,
@@ -53,6 +55,12 @@ from app.schemas_sp import (
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/survey", tags=["survey"])
+
+# Starting a session is anonymous and creates a respondent row that counts
+# toward balanced block assignment (_assign_block), so a script looping on it
+# would both fill the table and skew which block real respondents land in.
+# A person starts one session; this leaves room for retries and shared IPs.
+SESSION_RATE_LIMIT = int(os.environ.get("RATE_LIMIT_SURVEY_SESSION_PER_MIN", "10"))
 
 
 def _task_sequence_for(db: Session, respondent: SPRespondent, survey: SPSurvey) -> list[SPChoiceTask]:
@@ -106,7 +114,11 @@ def _alt_out(alt: SPAlternative) -> AlternativeOut:
     )
 
 
-@router.post("/{survey_id}/session", response_model=SessionStartResponse)
+@router.post(
+    "/{survey_id}/session",
+    response_model=SessionStartResponse,
+    dependencies=[Depends(rate_limit("survey_session", SESSION_RATE_LIMIT, 60))],
+)
 def start_session(
     survey_id: int,
     body: SessionStartRequest,
@@ -215,14 +227,6 @@ def complete_session(respondent_id: str, db: Session = Depends(get_db)):
     return CompleteResponse(respondent_id=respondent.id, completed_at=respondent.completed_at)
 
 
-def _check_admin_key(x_admin_key: str | None) -> None:
-    expected = os.environ.get("SP_ADMIN_KEY")
-    if not expected:
-        raise HTTPException(status_code=500, detail="SP_ADMIN_KEY is not configured")
-    if not x_admin_key or x_admin_key != expected:
-        raise HTTPException(status_code=401, detail="Missing or invalid X-Admin-Key")
-
-
 @router.get("/{survey_id}/export")
 def export_responses(
     survey_id: int,
@@ -236,7 +240,7 @@ def export_responses(
     alternative a respondent saw is its own row, not pivoted wide, so the
     column set stays fixed regardless of how many alternatives a task has.
     """
-    _check_admin_key(x_admin_key)
+    check_admin_key("SP_ADMIN_KEY", x_admin_key)
 
     survey = db.get(SPSurvey, survey_id)
     if not survey:

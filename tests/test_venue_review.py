@@ -298,3 +298,68 @@ def test_default_list_includes_pending_change(client):
     resp = client.get("/api/venues/review-queue", headers=ADMIN_HEADERS)
     assert resp.status_code == 200
     assert [r["status"] for r in resp.json()] == ["pending_change"]
+
+
+# ── Admin guard hardening and field allowlist (audit SEC-13, SEC-16) ─────────
+
+def test_unset_admin_key_disables_the_endpoint_without_naming_the_variable(client, monkeypatch):
+    monkeypatch.delenv("VENUE_ADMIN_KEY", raising=False)
+    resp = client.get("/api/venues/review-queue", headers=ADMIN_HEADERS)
+    assert resp.status_code == 503
+    assert "VENUE_ADMIN_KEY" not in resp.text
+
+
+def test_survey_key_does_not_open_the_review_queue(client, monkeypatch):
+    monkeypatch.setenv("SP_ADMIN_KEY", "survey-key")
+    resp = client.get("/api/venues/review-queue", headers={"X-Admin-Key": "survey-key"})
+    assert resp.status_code == 401
+
+
+@pytest.mark.parametrize("entity_type,field_name", [
+    ("parking_option", "reviewed"),       # a real column, but not one a draft may write
+    ("parking_option", "venue_id"),
+    ("transit_access", "source"),
+    ("venue", "name"),                    # not a review-queue entity at all
+    ("no_such_table", "price_notes"),
+])
+def test_draft_outside_the_reviewable_fields_is_refused_not_applied(client, entity_type, field_name):
+    draft_id = _seed_draft(client, entity_type=entity_type, field_name=field_name, extracted_value="1")
+    resp = client.post(
+        f"/api/venues/review-queue/{draft_id}/decision", json={"decision": "approve"}, headers=ADMIN_HEADERS,
+    )
+    assert resp.status_code == 409
+    db = client.session_local()
+    assert db.get(VenueExtraction, draft_id).status == "pending"
+    assert db.query(ParkingOption).count() == 0
+    db.close()
+
+
+def test_out_of_table_draft_can_still_be_rejected(client):
+    draft_id = _seed_draft(client, entity_type="parking_option", field_name="reviewed", extracted_value="1")
+    resp = client.post(
+        f"/api/venues/review-queue/{draft_id}/decision", json={"decision": "reject"}, headers=ADMIN_HEADERS,
+    )
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "rejected"
+
+
+def test_transit_draft_without_a_target_row_is_409_not_500(client):
+    draft_id = _seed_draft(
+        client, entity_type="transit_access", entity_id=None, field_name="walk_time_min",
+        extracted_value="9", previous_value="7", status="pending_change",
+    )
+    resp = client.post(
+        f"/api/venues/review-queue/{draft_id}/decision", json={"decision": "approve"}, headers=ADMIN_HEADERS,
+    )
+    assert resp.status_code == 409
+
+
+def test_reviewable_fields_cover_what_both_tiers_draft():
+    from app.services import venue_enrichment, venue_extract
+    from app.services.venue_targets import REVIEWABLE_FIELDS
+
+    assert set(venue_extract.FIELD_SPEC) == {"parking_option", "curb_dropoff", "congestion_tdm"}
+    for entity_type, fields in venue_extract.FIELD_SPEC.items():
+        assert fields == REVIEWABLE_FIELDS[entity_type]
+    tier1 = set(venue_enrichment._TEXT_DIFF_FIELDS) | set(venue_enrichment._NUMERIC_DIFF_TOLERANCES)
+    assert tier1 == set(REVIEWABLE_FIELDS["transit_access"])

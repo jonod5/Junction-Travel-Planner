@@ -8,3 +8,6 @@ select = ["E", "F", "W"]
 # seed_venues.py contains long verbatim data strings (URLs, notes, lot names)
 # that cannot be meaningfully wrapped without changing the source data.
 "app/seed_venues.py" = ["E501"]
+# seed_venue_translations.py is the same kind of file: one long translated
+# string per line, mirroring the seed data it translates.
+"app/seed_venue_translations.py" = ["E501"]

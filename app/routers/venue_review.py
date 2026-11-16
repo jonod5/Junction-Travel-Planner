@@ -30,15 +30,14 @@ Two kinds of decision, by draft.status:
   told to re-run detection rather than apply a decision made against
   stale context.
 
-Admin guard mirrors app/routers/survey.py's X-Admin-Key pattern, with its
-own env var (VENUE_ADMIN_KEY) since venue-data review and survey-export are
+Admin guard: the shared X-Admin-Key check in app/admin.py, with its own env
+var (VENUE_ADMIN_KEY) since venue-data review and survey-export are
 different privilege domains — one key leaking shouldn't expose the other.
 """
 
 from __future__ import annotations
 
 import logging
-import os
 from datetime import datetime, timezone
 from decimal import Decimal
 
@@ -46,24 +45,16 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.admin import check_admin_key
 from app.db import get_db
 from app.models.venue import VenueExtraction
 from app.schemas import ReviewDecisionIn, VenueExtractionOut
-from app.services.venue_targets import get_or_create_target_row
+from app.services.venue_targets import get_or_create_target_row, is_reviewable
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/venues/review-queue", tags=["venue-review"])
 
-_VALID_DECISIONS = {"approve", "edit", "reject"}
 _PENDING_STATUSES = {"pending", "pending_change"}
-
-
-def _check_admin_key(x_admin_key: str | None) -> None:
-    expected = os.environ.get("VENUE_ADMIN_KEY")
-    if not expected:
-        raise HTTPException(status_code=500, detail="VENUE_ADMIN_KEY is not configured")
-    if not x_admin_key or x_admin_key != expected:
-        raise HTTPException(status_code=401, detail="Missing or invalid X-Admin-Key")
 
 
 def _confidence_label(score: Decimal | float | None) -> str | None:
@@ -80,11 +71,11 @@ def _confidence_label(score: Decimal | float | None) -> str | None:
 @router.get("", response_model=list[VenueExtractionOut])
 def list_review_queue(
     venue_id: int | None = Query(None),
-    status: str = Query("pending"),
+    status: str = Query("pending", max_length=20),
     db: Session = Depends(get_db),
     x_admin_key: str | None = Header(default=None),
 ):
-    _check_admin_key(x_admin_key)
+    check_admin_key("VENUE_ADMIN_KEY", x_admin_key)
 
     query = select(VenueExtraction)
     if venue_id is not None:
@@ -147,10 +138,7 @@ def decide(
     db: Session = Depends(get_db),
     x_admin_key: str | None = Header(default=None),
 ):
-    _check_admin_key(x_admin_key)
-
-    if body.decision not in _VALID_DECISIONS:
-        raise HTTPException(status_code=422, detail=f"decision must be one of {sorted(_VALID_DECISIONS)}")
+    check_admin_key("VENUE_ADMIN_KEY", x_admin_key)
 
     draft = db.get(VenueExtraction, extraction_id)
     if not draft:
@@ -176,7 +164,22 @@ def decide(
     else:
         value_to_apply = draft.extracted_value
 
-    row = get_or_create_target_row(db, draft.venue_id, draft.entity_type, draft.entity_id)
+    # The queue row names the table and column to write. Only the pipeline
+    # writes queue rows, but that's not a reason to trust them blindly: check
+    # against the fields the two tiers are allowed to draft before setattr.
+    if not is_reviewable(draft.entity_type, draft.field_name):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"Extraction {extraction_id} targets {draft.entity_type}.{draft.field_name}, which the "
+                "review queue is not allowed to write. Reject it instead."
+            ),
+        )
+    try:
+        row = get_or_create_target_row(db, draft.venue_id, draft.entity_type, draft.entity_id)
+    except ValueError as exc:
+        # e.g. a transit_access draft whose target row has since been deleted.
+        raise HTTPException(status_code=409, detail=f"Cannot apply extraction {extraction_id}: {exc}") from exc
     _apply_field(row, draft.field_name, value_to_apply, draft.source_url, draft.confidence, now, draft.previous_value)
     if draft.entity_id is None:
         draft.entity_id = row.id

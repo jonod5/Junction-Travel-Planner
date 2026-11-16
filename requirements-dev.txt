@@ -1,0 +1,6 @@
+# Development and CI tools — everything in requirements.txt plus the linters
+# and test runner. The production image installs requirements.txt only.
+-r requirements.txt
+
+ruff
+pytest

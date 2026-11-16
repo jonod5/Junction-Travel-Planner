@@ -59,7 +59,7 @@ import re
 
 from app.data import metro_micro
 from app.ingest import gbfs
-from app.routers.directions import DirectionsError, _api_key, fetch_directions
+from app.services.directions import DirectionsError, _api_key, fetch_directions
 from app.services import fares
 
 log = logging.getLogger(__name__)
@@ -136,6 +136,21 @@ def _micro_snapshot(lat: float, lng: float) -> dict:
     for plans in near["pricing"].values():
         pricing.extend(plans)
     return {"types": types, "pricing": pricing}
+
+
+def _swappable(vehicle_types: set[str]) -> set[str]:
+    """
+    The nearby vehicle types the engine can actually build a leg from.
+
+    GBFS reports e-bikes as their own type ("ebike" — see
+    app.ingest.gbfs._vehicle_type_map), but the engine has no e-bike mode:
+    no MODE_LABEL entry, no preference key, no agreed fare. Composing a
+    variant from one used to raise KeyError and turn the whole request into
+    a 500 whenever an e-bike sat near an endpoint with a 10-minute walk to
+    transit. Until e-bikes are modeled on purpose, they simply don't
+    generate a variant — the other candidates are unaffected.
+    """
+    return {t for t in vehicle_types if t in MODE_LABEL}
 
 
 def _label(primary_modes: list[str]) -> str:
@@ -253,7 +268,8 @@ def _build_transit_candidates(origin, dest, departure_time, o_micro, d_micro, la
     # Access variant: replace leading walk with an available micro vehicle —
     # only when that walk is long enough for the swap to be a meaningfully
     # different option, not a near-duplicate of the plain transit route.
-    access_types = o_micro["types"] if lead_s >= MICRO_ACCESS_MIN_WALK_S and lead_m <= MICRO_MAX_M else set()
+    access_ok = lead_s >= MICRO_ACCESS_MIN_WALK_S and lead_m <= MICRO_MAX_M
+    access_types = _swappable(o_micro["types"]) if access_ok else set()
     for vtype in sorted(access_types):
         micro_s, micro_cost, saved, relabeled = micro_leg_metrics(lead_m, lead_s, lead, vtype, o_micro["pricing"])
         legs = [
@@ -267,7 +283,8 @@ def _build_transit_candidates(origin, dest, departure_time, o_micro, d_micro, la
         ))
 
     # Egress variant: replace trailing walk with an available micro vehicle.
-    egress_types = d_micro["types"] if trail_s >= MICRO_ACCESS_MIN_WALK_S and trail_m <= MICRO_MAX_M else set()
+    egress_ok = trail_s >= MICRO_ACCESS_MIN_WALK_S and trail_m <= MICRO_MAX_M
+    egress_types = _swappable(d_micro["types"]) if egress_ok else set()
     for vtype in sorted(egress_types):
         micro_s, micro_cost, saved, relabeled = micro_leg_metrics(trail_m, trail_s, trail, vtype, d_micro["pricing"])
         legs = [
@@ -441,11 +458,12 @@ def optimize(
 
     `language` is an app locale code, forwarded to every Directions call so
     each candidate's turn-by-turn `steps[].instruction` come back in the
-    caller's language (see app.routers.directions.fetch_directions).
+    caller's language (see app.services.directions.fetch_directions).
     """
     # A missing Maps key is a server misconfiguration, not a per-candidate miss.
     if not _api_key():
-        raise DirectionsError("Maps API key not configured", status_code=500)
+        log.error("Maps API key is not configured")
+        raise DirectionsError("Routing is temporarily unavailable", status_code=500)
 
     prefs = set(preferences) if preferences else None
 

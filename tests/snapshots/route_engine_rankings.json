@@ -1,0 +1,2348 @@
+{
+  "airport_origin_bur_far": {
+    "count": 3,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit",
+        "label": "Transit",
+        "legs": [
+          {
+            "distance_m": 7430,
+            "duration_s": 4100,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "distance_m": 520,
+                "duration_s": 400,
+                "instruction": "Walk to the station",
+                "mode": "walking",
+                "polyline": "w520"
+              },
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 3000,
+                "duration_s": 1500,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t3000",
+                "transit_line": "Line 0"
+              },
+              {
+                "arrival_stop": "Stop 2",
+                "departure_stop": "Stop 1",
+                "distance_m": 3000,
+                "duration_s": 1500,
+                "instruction": "Ride line 1",
+                "mode": "transit",
+                "polyline": "t3000",
+                "transit_line": "Line 1"
+              },
+              {
+                "distance_m": 910,
+                "duration_s": 700,
+                "instruction": "Walk to the venue",
+                "mode": "walking",
+                "polyline": "w910"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "transit"
+        ],
+        "num_transfers": 1,
+        "score": 0.3223,
+        "score_breakdown": {
+          "cost_norm": 0.05,
+          "num_transfers": 1,
+          "time_norm": 0.122,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 3.5,
+        "total_minutes": 68.3
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "rideshare",
+        "label": "Rideshare",
+        "legs": [
+          {
+            "distance_m": 30000,
+            "duration_s": 2100,
+            "mode": "ridehail",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 30000,
+                "duration_s": 2100,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d30000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "ridehail"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 69.41,
+        "total_minutes": 35.0
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 25000,
+            "duration_s": 18500,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 25000,
+                "duration_s": 18500,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w25000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 308.3
+      }
+    ],
+    "origin": {
+      "lat": 34.2007,
+      "lng": -118.3585
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "airport_origin_lax": {
+    "count": 3,
+    "departure_time": null,
+    "destination": {
+      "lat": 33.9535,
+      "lng": -118.3392
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "metro-micro",
+        "label": "Metro Micro",
+        "legs": [
+          {
+            "distance_m": 8200,
+            "duration_s": 1800,
+            "mode": "metro_micro",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 8200,
+                "duration_s": 900,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d8200"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "metro_micro"
+        ],
+        "num_transfers": 0,
+        "score": 0.2694,
+        "score_breakdown": {
+          "cost_norm": 0.069,
+          "num_transfers": 0,
+          "time_norm": 0.2,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 2.5,
+        "total_minutes": 30.0
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "rideshare",
+        "label": "Rideshare",
+        "legs": [
+          {
+            "distance_m": 8200,
+            "duration_s": 900,
+            "mode": "ridehail",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 8200,
+                "duration_s": 900,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d8200"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "ridehail"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 36.02,
+        "total_minutes": 15.0
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 7200,
+            "duration_s": 5400,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 7200,
+                "duration_s": 5400,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w7200"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 90.0
+      }
+    ],
+    "origin": {
+      "lat": 33.9425,
+      "lng": -118.4081
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "central_7km_all_modes": {
+    "count": 6,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit",
+        "label": "Transit",
+        "legs": [
+          {
+            "distance_m": 7690,
+            "duration_s": 2200,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "distance_m": 845,
+                "duration_s": 650,
+                "instruction": "Walk to the station",
+                "mode": "walking",
+                "polyline": "w845"
+              },
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 900,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              },
+              {
+                "distance_m": 845,
+                "duration_s": 650,
+                "instruction": "Walk to the venue",
+                "mode": "walking",
+                "polyline": "w845"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "transit"
+        ],
+        "num_transfers": 0,
+        "score": 0.4263,
+        "score_breakdown": {
+          "cost_norm": 0.063,
+          "num_transfers": 0,
+          "time_norm": 0.364,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 36.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit+bike-access",
+        "label": "Bike \u2192 Transit",
+        "legs": [
+          {
+            "distance_m": 845.0,
+            "duration_s": 201.19047619047618,
+            "mode": "bike",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 845,
+                "duration_s": 201,
+                "instruction": "Bike to the station",
+                "mode": "bike",
+                "polyline": "w845"
+              }
+            ]
+          },
+          {
+            "distance_m": 7690,
+            "duration_s": 1550.0,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 900,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              },
+              {
+                "distance_m": 845,
+                "duration_s": 650,
+                "instruction": "Walk to the venue",
+                "mode": "walking",
+                "polyline": "w845"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike",
+          "transit"
+        ],
+        "num_transfers": 1,
+        "score": 0.5026,
+        "score_breakdown": {
+          "cost_norm": 0.125,
+          "num_transfers": 1,
+          "time_norm": 0.227,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 3.5,
+        "total_minutes": 29.2
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit+bike-egress",
+        "label": "Transit \u2192 Bike",
+        "legs": [
+          {
+            "distance_m": 7690,
+            "duration_s": 1550.0,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "distance_m": 845,
+                "duration_s": 650,
+                "instruction": "Walk to the station",
+                "mode": "walking",
+                "polyline": "w845"
+              },
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 900,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              }
+            ]
+          },
+          {
+            "distance_m": 845.0,
+            "duration_s": 201.19047619047618,
+            "mode": "bike",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 845,
+                "duration_s": 201,
+                "instruction": "Bike to the venue",
+                "mode": "bike",
+                "polyline": "w845"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "transit",
+          "bike"
+        ],
+        "num_transfers": 1,
+        "score": 0.5026,
+        "score_breakdown": {
+          "cost_norm": 0.125,
+          "num_transfers": 1,
+          "time_norm": 0.227,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 3.5,
+        "total_minutes": 29.2
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit+bike-access+bike-egress",
+        "label": "Bike \u2192 Transit \u2192 Bike",
+        "legs": [
+          {
+            "distance_m": 845.0,
+            "duration_s": 201.19047619047618,
+            "mode": "bike",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 845,
+                "duration_s": 201,
+                "instruction": "Bike to the station",
+                "mode": "bike",
+                "polyline": "w845"
+              }
+            ]
+          },
+          {
+            "distance_m": 7690,
+            "duration_s": 900.0,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 900,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              }
+            ]
+          },
+          {
+            "distance_m": 845.0,
+            "duration_s": 201.19047619047618,
+            "mode": "bike",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 845,
+                "duration_s": 201,
+                "instruction": "Bike to the venue",
+                "mode": "bike",
+                "polyline": "w845"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike",
+          "transit",
+          "bike"
+        ],
+        "num_transfers": 2,
+        "score": 0.5789,
+        "score_breakdown": {
+          "cost_norm": 0.188,
+          "num_transfers": 2,
+          "time_norm": 0.091,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 5.25,
+        "total_minutes": 21.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "rideshare",
+        "label": "Rideshare",
+        "legs": [
+          {
+            "distance_m": 7000,
+            "duration_s": 1000,
+            "mode": "ridehail",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 7000,
+                "duration_s": 1000,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d7000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "ridehail"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 27.92,
+        "total_minutes": 16.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 6000,
+            "duration_s": 4300,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 6000,
+                "duration_s": 4300,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w6000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 71.7
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "equal_time_and_cost_tie_break": {
+    "count": 2,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "bike-only",
+        "label": "Bike",
+        "legs": [
+          {
+            "distance_m": 2000,
+            "duration_s": 600,
+            "mode": "bike",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 2000,
+                "duration_s": 600,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b2000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike"
+        ],
+        "num_transfers": 0,
+        "score": 0.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 4.0,
+        "total_minutes": 10.0
+      },
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "scooter-only",
+        "label": "Scooter",
+        "legs": [
+          {
+            "distance_m": 2000,
+            "duration_s": 600,
+            "mode": "scooter",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 2000,
+                "duration_s": 600,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b2000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter"
+        ],
+        "num_transfers": 0,
+        "score": 0.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 4.0,
+        "total_minutes": 10.0
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "live_gbfs_pricing": {
+    "count": 8,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "bike-only",
+        "label": "Bike",
+        "legs": [
+          {
+            "distance_m": 4200,
+            "duration_s": 950,
+            "mode": "bike",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 4200,
+                "duration_s": 950,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b4200"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike"
+        ],
+        "num_transfers": 0,
+        "score": 0.4513,
+        "score_breakdown": {
+          "cost_norm": 0.334,
+          "num_transfers": 0,
+          "time_norm": 0.117,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 8.12,
+        "total_minutes": 15.8
+      },
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "scooter-only",
+        "label": "Scooter",
+        "legs": [
+          {
+            "distance_m": 4200,
+            "duration_s": 950,
+            "mode": "scooter",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 4200,
+                "duration_s": 950,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b4200"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter"
+        ],
+        "num_transfers": 0,
+        "score": 0.4513,
+        "score_breakdown": {
+          "cost_norm": 0.334,
+          "num_transfers": 0,
+          "time_norm": 0.117,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 8.12,
+        "total_minutes": 15.8
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit",
+        "label": "Transit",
+        "legs": [
+          {
+            "distance_m": 7742,
+            "duration_s": 2140,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "distance_m": 910,
+                "duration_s": 700,
+                "instruction": "Walk to the station",
+                "mode": "walking",
+                "polyline": "w910"
+              },
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 800,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              },
+              {
+                "distance_m": 832,
+                "duration_s": 640,
+                "instruction": "Walk to the venue",
+                "mode": "walking",
+                "polyline": "w832"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "transit"
+        ],
+        "num_transfers": 0,
+        "score": 0.7577,
+        "score_breakdown": {
+          "cost_norm": 0.072,
+          "num_transfers": 0,
+          "time_norm": 0.686,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 35.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit+scooter-access",
+        "label": "Scooter \u2192 Transit",
+        "legs": [
+          {
+            "distance_m": 910.0,
+            "duration_s": 216.66666666666666,
+            "mode": "scooter",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 910,
+                "duration_s": 217,
+                "instruction": "Scooter to the station",
+                "mode": "scooter",
+                "polyline": "w910"
+              }
+            ]
+          },
+          {
+            "distance_m": 7742,
+            "duration_s": 1440.0,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 800,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              },
+              {
+                "distance_m": 832,
+                "duration_s": 640,
+                "instruction": "Walk to the venue",
+                "mode": "walking",
+                "polyline": "w832"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter",
+          "transit"
+        ],
+        "num_transfers": 1,
+        "score": 0.7841,
+        "score_breakdown": {
+          "cost_norm": 0.18,
+          "num_transfers": 1,
+          "time_norm": 0.454,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 4.37,
+        "total_minutes": 27.6
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit+scooter-egress",
+        "label": "Transit \u2192 Scooter",
+        "legs": [
+          {
+            "distance_m": 7742,
+            "duration_s": 1500.0,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "distance_m": 910,
+                "duration_s": 700,
+                "instruction": "Walk to the station",
+                "mode": "walking",
+                "polyline": "w910"
+              },
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 800,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              }
+            ]
+          },
+          {
+            "distance_m": 832.0,
+            "duration_s": 198.09523809523807,
+            "mode": "scooter",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 832,
+                "duration_s": 198,
+                "instruction": "Scooter to the venue",
+                "mode": "scooter",
+                "polyline": "w832"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "transit",
+          "scooter"
+        ],
+        "num_transfers": 1,
+        "score": 0.7988,
+        "score_breakdown": {
+          "cost_norm": 0.174,
+          "num_transfers": 1,
+          "time_norm": 0.474,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 4.24,
+        "total_minutes": 28.3
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit+scooter-access+scooter-egress",
+        "label": "Scooter \u2192 Transit \u2192 Scooter",
+        "legs": [
+          {
+            "distance_m": 910.0,
+            "duration_s": 216.66666666666666,
+            "mode": "scooter",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 910,
+                "duration_s": 217,
+                "instruction": "Scooter to the station",
+                "mode": "scooter",
+                "polyline": "w910"
+              }
+            ]
+          },
+          {
+            "distance_m": 7742,
+            "duration_s": 800.0,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 800,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              }
+            ]
+          },
+          {
+            "distance_m": 832.0,
+            "duration_s": 198.09523809523807,
+            "mode": "scooter",
+            "polyline": "",
+            "steps": [
+              {
+                "distance_m": 832,
+                "duration_s": 198,
+                "instruction": "Scooter to the venue",
+                "mode": "scooter",
+                "polyline": "w832"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter",
+          "transit",
+          "scooter"
+        ],
+        "num_transfers": 2,
+        "score": 0.8252,
+        "score_breakdown": {
+          "cost_norm": 0.282,
+          "num_transfers": 2,
+          "time_norm": 0.243,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 6.86,
+        "total_minutes": 20.2
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "rideshare",
+        "label": "Rideshare",
+        "legs": [
+          {
+            "distance_m": 4600,
+            "duration_s": 700,
+            "mode": "ridehail",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 4600,
+                "duration_s": 700,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d4600"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "ridehail"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 24.3,
+        "total_minutes": 11.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 3800,
+            "duration_s": 2800,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 3800,
+                "duration_s": 2800,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w3800"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 46.7
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "metro_micro_zone": {
+    "count": 4,
+    "departure_time": null,
+    "destination": {
+      "lat": 33.9451,
+      "lng": -118.3431
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "bike-only",
+        "label": "Bike",
+        "legs": [
+          {
+            "distance_m": 1700,
+            "duration_s": 430,
+            "mode": "bike",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 1700,
+                "duration_s": 430,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b1700"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike"
+        ],
+        "num_transfers": 0,
+        "score": 0.1555,
+        "score_breakdown": {
+          "cost_norm": 0.086,
+          "num_transfers": 0,
+          "time_norm": 0.07,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 7.2
+      },
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "scooter-only",
+        "label": "Scooter",
+        "legs": [
+          {
+            "distance_m": 1700,
+            "duration_s": 430,
+            "mode": "scooter",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 1700,
+                "duration_s": 430,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b1700"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter"
+        ],
+        "num_transfers": 0,
+        "score": 0.256,
+        "score_breakdown": {
+          "cost_norm": 0.186,
+          "num_transfers": 0,
+          "time_norm": 0.07,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 3.8,
+        "total_minutes": 7.2
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "rideshare",
+        "label": "Rideshare",
+        "legs": [
+          {
+            "distance_m": 1900,
+            "duration_s": 380,
+            "mode": "ridehail",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 1900,
+                "duration_s": 380,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d1900"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "ridehail"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 20.41,
+        "total_minutes": 6.3
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 1500,
+            "duration_s": 1150,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 1500,
+                "duration_s": 1150,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w1500"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 19.2
+      }
+    ],
+    "origin": {
+      "lat": 33.9535,
+      "lng": -118.3392
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "no_transit_route": {
+    "count": 4,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "bike-only",
+        "label": "Bike",
+        "legs": [
+          {
+            "distance_m": 3300,
+            "duration_s": 760,
+            "mode": "bike",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 3300,
+                "duration_s": 760,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b3300"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike"
+        ],
+        "num_transfers": 0,
+        "score": 0.177,
+        "score_breakdown": {
+          "cost_norm": 0.076,
+          "num_transfers": 0,
+          "time_norm": 0.101,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 12.7
+      },
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "scooter-only",
+        "label": "Scooter",
+        "legs": [
+          {
+            "distance_m": 3300,
+            "duration_s": 760,
+            "mode": "scooter",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 3300,
+                "duration_s": 760,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b3300"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter"
+        ],
+        "num_transfers": 0,
+        "score": 0.3587,
+        "score_breakdown": {
+          "cost_norm": 0.258,
+          "num_transfers": 0,
+          "time_norm": 0.101,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 5.94,
+        "total_minutes": 12.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "rideshare",
+        "label": "Rideshare",
+        "legs": [
+          {
+            "distance_m": 3600,
+            "duration_s": 600,
+            "mode": "ridehail",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 3600,
+                "duration_s": 600,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d3600"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "ridehail"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 23.06,
+        "total_minutes": 10.0
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 3000,
+            "duration_s": 2200,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 3000,
+                "duration_s": 2200,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w3000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 36.7
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "preferences_exclude_ridehail": {
+    "count": 3,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "bike-only",
+        "label": "Bike",
+        "legs": [
+          {
+            "distance_m": 4500,
+            "duration_s": 1000,
+            "mode": "bike",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 4500,
+                "duration_s": 1000,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b4500"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike"
+        ],
+        "num_transfers": 0,
+        "score": 0.2333,
+        "score_breakdown": {
+          "cost_norm": 0.233,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 16.7
+      },
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "scooter-only",
+        "label": "Scooter",
+        "legs": [
+          {
+            "distance_m": 4500,
+            "duration_s": 1000,
+            "mode": "scooter",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 4500,
+                "duration_s": 1000,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b4500"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 7.5,
+        "total_minutes": 16.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 4000,
+            "duration_s": 2900,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 4000,
+                "duration_s": 2900,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w4000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 48.3
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": [
+      "bike",
+      "metro_micro",
+      "scooter",
+      "transit",
+      "walk"
+    ],
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "preferences_transit_and_walk_only": {
+    "count": 2,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit",
+        "label": "Transit",
+        "legs": [
+          {
+            "distance_m": 7690,
+            "duration_s": 2200,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "distance_m": 845,
+                "duration_s": 650,
+                "instruction": "Walk to the station",
+                "mode": "walking",
+                "polyline": "w845"
+              },
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 6000,
+                "duration_s": 900,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t6000",
+                "transit_line": "Line 0"
+              },
+              {
+                "distance_m": 845,
+                "duration_s": 650,
+                "instruction": "Walk to the venue",
+                "mode": "walking",
+                "polyline": "w845"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "transit"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 36.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 6000,
+            "duration_s": 4300,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 6000,
+                "duration_s": 4300,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w6000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 71.7
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": [
+      "transit",
+      "walk"
+    ],
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "short_hop_walk_bike_scooter": {
+    "count": 3,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "bike-only",
+        "label": "Bike",
+        "legs": [
+          {
+            "distance_m": 1600,
+            "duration_s": 400,
+            "mode": "bike",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 1600,
+                "duration_s": 400,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b1600"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike"
+        ],
+        "num_transfers": 0,
+        "score": 0.4861,
+        "score_breakdown": {
+          "cost_norm": 0.486,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 6.7
+      },
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "scooter-only",
+        "label": "Scooter",
+        "legs": [
+          {
+            "distance_m": 1600,
+            "duration_s": 400,
+            "mode": "scooter",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 1600,
+                "duration_s": 400,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b1600"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 3.6,
+        "total_minutes": 6.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 1400,
+            "duration_s": 1050,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 1400,
+                "duration_s": 1050,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w1400"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 17.5
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "transit_is_walk_fallback_only": {
+    "count": 3,
+    "departure_time": null,
+    "destination": {
+      "lat": 34.0141,
+      "lng": -118.2879
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "bike-only",
+        "label": "Bike",
+        "legs": [
+          {
+            "distance_m": 1000,
+            "duration_s": 260,
+            "mode": "bike",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 1000,
+                "duration_s": 260,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b1000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "bike"
+        ],
+        "num_transfers": 0,
+        "score": 0.6506,
+        "score_breakdown": {
+          "cost_norm": 0.651,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 1.75,
+        "total_minutes": 4.3
+      },
+      {
+        "compare_group": "micro-direct",
+        "cost_is_estimate": true,
+        "id": "scooter-only",
+        "label": "Scooter",
+        "legs": [
+          {
+            "distance_m": 1000,
+            "duration_s": 260,
+            "mode": "scooter",
+            "polyline": "BICYCLING",
+            "steps": [
+              {
+                "distance_m": 1000,
+                "duration_s": 260,
+                "instruction": "bicycling the whole way",
+                "mode": "bicycling",
+                "polyline": "b1000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "scooter"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 2.69,
+        "total_minutes": 4.3
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 900,
+            "duration_s": 700,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 900,
+                "duration_s": 700,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w900"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 11.7
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  },
+  "two_transfers_long_walks_no_micro_nearby": {
+    "count": 3,
+    "departure_time": 1785000000,
+    "destination": {
+      "lat": 34.1613,
+      "lng": -118.1676
+    },
+    "notes": [
+      "All costs are modeled estimates, not quotes.",
+      "Live micromobility data via GBFS feeds (Bird, Spin, Metro Bike Share), used under the GBFS Data License \u2014 royalty-free with attribution."
+    ],
+    "options": [
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "transit",
+        "label": "Transit",
+        "legs": [
+          {
+            "distance_m": 8080,
+            "duration_s": 4300,
+            "mode": "transit",
+            "polyline": "TRANSIT",
+            "steps": [
+              {
+                "distance_m": 910,
+                "duration_s": 700,
+                "instruction": "Walk to the station",
+                "mode": "walking",
+                "polyline": "w910"
+              },
+              {
+                "arrival_stop": "Stop 1",
+                "departure_stop": "Stop 0",
+                "distance_m": 2000,
+                "duration_s": 900,
+                "instruction": "Ride line 0",
+                "mode": "transit",
+                "polyline": "t2000",
+                "transit_line": "Line 0"
+              },
+              {
+                "arrival_stop": "Stop 2",
+                "departure_stop": "Stop 1",
+                "distance_m": 2000,
+                "duration_s": 900,
+                "instruction": "Ride line 1",
+                "mode": "transit",
+                "polyline": "t2000",
+                "transit_line": "Line 1"
+              },
+              {
+                "arrival_stop": "Stop 3",
+                "departure_stop": "Stop 2",
+                "distance_m": 2000,
+                "duration_s": 900,
+                "instruction": "Ride line 2",
+                "mode": "transit",
+                "polyline": "t2000",
+                "transit_line": "Line 2"
+              },
+              {
+                "distance_m": 1170,
+                "duration_s": 900,
+                "instruction": "Walk to the venue",
+                "mode": "walking",
+                "polyline": "w1170"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "transit"
+        ],
+        "num_transfers": 2,
+        "score": 0.645,
+        "score_breakdown": {
+          "cost_norm": 0.133,
+          "num_transfers": 2,
+          "time_norm": 0.212,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 5.0,
+        "total_minutes": 71.7
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "rideshare",
+        "label": "Rideshare",
+        "legs": [
+          {
+            "distance_m": 20000,
+            "duration_s": 1700,
+            "mode": "ridehail",
+            "polyline": "DRIVING",
+            "steps": [
+              {
+                "distance_m": 20000,
+                "duration_s": 1700,
+                "instruction": "driving the whole way",
+                "mode": "driving",
+                "polyline": "d20000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "ridehail"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 1.0,
+          "num_transfers": 0,
+          "time_norm": 0.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 37.52,
+        "total_minutes": 28.3
+      },
+      {
+        "compare_group": null,
+        "cost_is_estimate": true,
+        "id": "walk",
+        "label": "Walk",
+        "legs": [
+          {
+            "distance_m": 19000,
+            "duration_s": 14000,
+            "mode": "walk",
+            "polyline": "WALKING",
+            "steps": [
+              {
+                "distance_m": 19000,
+                "duration_s": 14000,
+                "instruction": "walking the whole way",
+                "mode": "walking",
+                "polyline": "w19000"
+              }
+            ]
+          }
+        ],
+        "modes": [
+          "walk"
+        ],
+        "num_transfers": 0,
+        "score": 1.0,
+        "score_breakdown": {
+          "cost_norm": 0.0,
+          "num_transfers": 0,
+          "time_norm": 1.0,
+          "weights": {
+            "cost": 1.0,
+            "time": 1.0,
+            "transfer": 0.15
+          }
+        },
+        "total_cost_usd": 0.0,
+        "total_minutes": 233.3
+      }
+    ],
+    "origin": {
+      "lat": 34.043,
+      "lng": -118.2673
+    },
+    "preferences": null,
+    "weights": {
+      "cost": 1.0,
+      "time": 1.0,
+      "transfer": 0.15
+    }
+  }
+}

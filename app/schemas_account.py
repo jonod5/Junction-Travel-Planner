@@ -15,6 +15,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Keep in sync with frontend/lib/i18n.ts's SUPPORTED_LANGUAGES.
 SupportedLanguage = Literal["en", "es", "fr", "zh-Hans"]
+# Keep in sync with app.services.route_engine.MODE_LABEL and the frontend's
+# ROUTE_MODES (frontend/lib/store.tsx).
+RouteMode = Literal["walk", "bike", "scooter", "transit", "metro_micro", "ridehail"]
 
 
 class AccountOut(BaseModel):
@@ -29,5 +32,5 @@ class AccountOut(BaseModel):
 
 class AccountUpdate(BaseModel):
     display_name: str | None = Field(None, min_length=1, max_length=200)
-    default_modes: list[str] | None = None
+    default_modes: list[RouteMode] | None = Field(None, max_length=12)
     language: SupportedLanguage | None = None

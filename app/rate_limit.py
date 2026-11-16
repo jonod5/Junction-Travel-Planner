@@ -37,10 +37,44 @@ from app.cache import get_redis
 log = logging.getLogger(__name__)
 
 
+def _trusted_proxy_hops() -> int:
+    """How many reverse proxies in front of this app are trusted to report
+    the client address (RATE_LIMIT_TRUSTED_PROXY_HOPS, default 0)."""
+    try:
+        return max(0, int(os.environ.get("RATE_LIMIT_TRUSTED_PROXY_HOPS", "0")))
+    except ValueError:
+        return 0
+
+
 def _client_key(request: Request) -> str:
-    # request.client.host reflects the real client IP via X-Forwarded-For
-    # once behind a proxy (Railway) — uvicorn's ProxyHeadersMiddleware
-    # (already in the stack) rewrites it from the forwarded header.
+    """
+    The address to rate-limit by.
+
+    With no trusted proxies configured (the default, right for local dev)
+    this is the socket peer. Behind a reverse proxy the socket peer is the
+    PROXY, so every user shares one bucket — the per-endpoint limits become
+    global limits and one abusive client locks everyone out. Uvicorn does
+    not fix this by itself: it only rewrites request.client from
+    X-Forwarded-For for peers listed in FORWARDED_ALLOW_IPS (default
+    127.0.0.1), which a hosted proxy never is.
+
+    Each proxy appends the address it received the connection from to
+    X-Forwarded-For, so with N trusted proxies the client is the Nth entry
+    from the right. Entries further left are whatever the caller sent and
+    must not be trusted — which is why this counts from the right and needs
+    N to be configured rather than taking the first entry:
+      1 — direct to the host's edge proxy (e.g. Railway)
+      2 — a second proxy in front of that (e.g. the Vercel /api rewrite)
+    Set N to the number of proxies EVERY request passes through. If some
+    callers can skip the outer proxy, they can spoof the entry it would have
+    written; use the smaller N, or block direct access.
+    """
+    hops = _trusted_proxy_hops()
+    if hops > 0:
+        forwarded = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",") if p.strip()]
+        if len(forwarded) >= hops:
+            # Bounded: this ends up in a Redis key.
+            return forwarded[-hops][:64]
     return request.client.host if request.client else "unknown"
 
 

@@ -8,6 +8,7 @@ works against either kind of Supabase project without a code change:
 
   1. JWKS (current Supabase default) — asymmetric RS256/ES256, keys fetched
      and cached from Supabase's public JWKS endpoint, rotate automatically.
+     The token's issuer must be this project (<SUPABASE_URL>/auth/v1).
   2. HS256 shared-secret fallback (older/self-managed projects) — only used
      if SUPABASE_JWT_SECRET is set.
 
@@ -37,6 +38,10 @@ log = logging.getLogger(__name__)
 
 # Supabase always issues access tokens with this audience.
 _AUDIENCE = "authenticated"
+# A token with no expiry would be valid forever, and one with no subject
+# identifies nobody — PyJWT only checks exp when it's present, so both must
+# be demanded explicitly.
+_REQUIRED_CLAIMS = {"require": ["exp", "sub"]}
 
 _jwks_client: PyJWKClient | None = None
 _jwks_client_url: str | None = None
@@ -59,23 +64,43 @@ def _jwks_client_for(url: str) -> PyJWKClient:
     return _jwks_client
 
 
+def _expected_issuer(url: str | None) -> str | None:
+    """Supabase stamps every token with iss = <project URL>/auth/v1. None
+    (no check) only when SUPABASE_URL isn't configured, i.e. the
+    secret-only HS256 setup, where there is no project URL to compare to."""
+    return f"{url.rstrip('/')}/auth/v1" if url else None
+
+
 def _decode(token: str) -> dict:
-    """Verify signature + exp/aud, return the claims. Raises HTTPException(401) on any failure."""
+    """Verify signature, exp, aud and (when the project URL is known) iss,
+    and return the claims. Raises HTTPException(401) on any failure.
+
+    The algorithm list is pinned per path — asymmetric for JWKS, HS256 for
+    the shared secret — and never mixed in one decode call, so a token can't
+    pick a weaker algorithm for the key it's checked against.
+    """
     last_error: Exception | None = None
 
     url = _supabase_url()
+    issuer = _expected_issuer(url)
     if url:
         try:
             client = _jwks_client_for(url)
             signing_key = client.get_signing_key_from_jwt(token)
-            return jwt.decode(token, signing_key.key, algorithms=["RS256", "ES256"], audience=_AUDIENCE)
+            return jwt.decode(
+                token, signing_key.key, algorithms=["RS256", "ES256"],
+                audience=_AUDIENCE, issuer=issuer, options=_REQUIRED_CLAIMS,
+            )
         except (jwt.InvalidTokenError, jwt.PyJWKClientError) as exc:
             last_error = exc
 
     secret = _jwt_secret()
     if secret:
         try:
-            return jwt.decode(token, secret, algorithms=["HS256"], audience=_AUDIENCE)
+            return jwt.decode(
+                token, secret, algorithms=["HS256"],
+                audience=_AUDIENCE, issuer=issuer, options=_REQUIRED_CLAIMS,
+            )
         except jwt.InvalidTokenError as exc:
             last_error = exc
 
