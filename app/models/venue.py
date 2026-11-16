@@ -366,10 +366,10 @@ class VenueExtraction(Base):
 
 class GamesTimeOfficial(Base):
     """
-    Tier-3 scaffold — one row per venue for Games-time official LA28 data
+    Tier-3 scaffold — one row per venue for Games-time official data
     (car-restricted zones, designated PUDO, shuttles, arrival windows).
     Nothing populates these fields yet; this table exists so the app can
-    transparently show "awaiting official LA28 data" rather than nothing
+    transparently show "awaiting official Games data" rather than nothing
     at all. source defaults to "official_pending" and stays that way until
     a real ingestion path exists — do not populate or invent values here.
     """

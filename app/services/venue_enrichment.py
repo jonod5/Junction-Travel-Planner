@@ -8,7 +8,7 @@ The venue-data pipeline splits every field by how automatable it is:
     time/distance and a ride-hail cost estimate (computed).
   Tier 2 (later phase) — LLM-extracted from source pages, reviewed=False
     until a human approves. Not touched by this module.
-  Tier 3 (scaffold only) — official LA28 data, not yet available anywhere.
+  Tier 3 (scaffold only) — official Games data, not yet available anywhere.
 
 Ground rule this module upholds: feed data is written as fact (reviewed=True)
 because it IS verifiable fact — a GTFS stop either exists at that location

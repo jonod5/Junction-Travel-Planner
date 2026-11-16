@@ -285,7 +285,7 @@ def get_venue(
             ),
         )
 
-    # Tier-3 scaffold — always present once seeded, always empty until LA28
+    # Tier-3 scaffold — always present once seeded, always empty until the Games
     # publishes official data. Not translated: every field is None or the
     # literal source flag, nothing to translate yet.
     official: GamesTimeOfficialOut | None = None

@@ -1262,7 +1262,7 @@ def seed(session: Session) -> None:
         if cong:
             session.add(CongestionTdm(venue_id=v.id, reviewed=True, **cong))
 
-        # Tier-3 scaffold — no official LA28 data exists yet for any venue;
+        # Tier-3 scaffold — no official Games data exists yet for any venue;
         # this row just makes that state visible rather than absent. See
         # GamesTimeOfficial's docstring in app/models/venue.py.
         session.add(GamesTimeOfficial(venue_id=v.id))

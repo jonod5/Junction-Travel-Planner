@@ -176,7 +176,7 @@ def _fetch_page(url: str) -> str:
 
     # Same rationale as app/ingest/osm.py's Overpass fix — a generic
     # User-Agent gets blocked by some sites' bot filtering.
-    headers = {"User-Agent": "junction-la28-venue-extraction/1.0 (github.com/jonod5/Junction-LA28)"}
+    headers = {"User-Agent": "junction-venue-extraction/1.0 (github.com/jonod5/Junction-Travel-Planner)"}
     with httpx.Client(timeout=20, headers=headers, follow_redirects=False) as client:
         html = _download(client, url)
 

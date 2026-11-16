@@ -61,7 +61,7 @@ def _fetch(lat: float, lng: float, radius_m: int) -> dict:
     # Overpass's public instance 406s requests without a descriptive
     # User-Agent — httpx's default ("python-httpx/...") gets rejected as
     # part of its anti-abuse filtering. Per Overpass's own usage policy.
-    headers = {"User-Agent": "junction-la28-venue-enrichment/1.0 (github.com/jonod5/Junction-LA28)"}
+    headers = {"User-Agent": "junction-venue-enrichment/1.0 (github.com/jonod5/Junction-Travel-Planner)"}
     with httpx.Client(timeout=20, headers=headers) as client:
         resp = client.post(OVERPASS_URL, data={"data": _query(lat, lng, radius_m)})
         resp.raise_for_status()
