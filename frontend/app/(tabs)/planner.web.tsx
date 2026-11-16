@@ -9,7 +9,7 @@
 // screen renders the SELECTED ranked option's legs, not a manually-fetched
 // single Directions result. Native keeps its existing separate Builder/Map/
 // Routes/Comparison screens unchanged (see (tabs)/index.tsx, map.tsx).
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +18,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
+import { useWindowDimensions } from '@/lib/useWindowDimensions';
 
 import { BottomSheet, type SheetSnap } from '@/components/BottomSheet';
 import { DeepLinkButtons } from '@/components/DeepLinkButtons';

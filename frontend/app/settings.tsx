@@ -2,7 +2,7 @@
 // and gets its own URL/back button like My Itineraries). Web-only for now,
 // same as itineraries.tsx, for the same reason: native fallback screens are
 // legacy and this feature never shipped there.
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

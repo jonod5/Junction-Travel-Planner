@@ -2,7 +2,7 @@
 // lightweight rename/tag-edit/delete-confirm flows rather than building
 // custom dialogs for a secondary account-management page). Native falls
 // back to a simple "not available yet" message.
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

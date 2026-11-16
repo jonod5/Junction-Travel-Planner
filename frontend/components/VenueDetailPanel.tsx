@@ -1,4 +1,4 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import type { TFunction } from 'i18next';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';

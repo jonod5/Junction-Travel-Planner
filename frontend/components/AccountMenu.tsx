@@ -4,7 +4,7 @@
 // navigator header's overflow clipping. Docked top:12,right:12 — the
 // planner's own floating panel is top-left, and VenueDetailPanel is shifted
 // down (top:64) to leave this corner free.
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import { usePathname, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';

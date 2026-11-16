@@ -15,6 +15,7 @@
 import React, { useRef, useState } from 'react';
 
 import { colors, radius } from '@/constants/theme';
+import { useViewportHeight } from '@/lib/useWindowDimensions';
 
 export type SheetSnap = 'peek' | 'half' | 'full';
 
@@ -43,8 +44,11 @@ export function BottomSheet({ snap, onSnapChange, peekHeight = 100, header, chil
   const startYRef = useRef(0);
   const startHeightRef = useRef(0);
 
+  // Hydration-safe viewport height: 800 on the server and while hydrating (so
+  // the prerendered HTML matches), the real height after.
+  const vh = useViewportHeight();
+
   const snapHeight = (s: SheetSnap): number => {
-    const vh = typeof window !== 'undefined' ? window.innerHeight : 800;
     if (s === 'peek') return peekHeight;
     if (s === 'half') return Math.round(vh * HALF_FRACTION);
     return Math.round(vh * FULL_FRACTION);

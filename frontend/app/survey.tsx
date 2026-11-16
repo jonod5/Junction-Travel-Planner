@@ -7,7 +7,7 @@
 // language. Swap CONSENT_TITLE/CONSENT_BODY for the real approved text
 // before any live data collection — this phase (database + frontend +
 // ingest skeleton) explicitly does not collect real respondent data.
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
