@@ -119,6 +119,12 @@ const MODE_COLORS: Record<string, string> = {
 function modeShortLabel(mode: string): string {
   return i18next.t(`modes.shortLabel.${mode}`, { defaultValue: mode });
 }
+/** A route option's name in the UI language, built from its modes — the
+ *  backend's `label` is always English ("Scooter → Transit"). Same format and
+ *  order as route_engine._label. */
+function optionLabel(opt: { modes: string[] }): string {
+  return opt.modes.map(modeShortLabel).join(' → ');
+}
 
 interface RenderStep extends DirectionStep {
   engineMode: string;
@@ -1120,7 +1126,7 @@ export default function UnifiedPlannerScreen() {
                           style={[styles.optionCard, active && styles.optionCardActive]}
                         >
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                            <Text style={[styles.optionLabel, active && styles.optionLabelActive]} numberOfLines={1}>{opt.label}</Text>
+                            <Text style={[styles.optionLabel, active && styles.optionLabelActive]} numberOfLines={1}>{optionLabel(opt)}</Text>
                             {idx === 0 && <Text style={styles.bestBadge}>{t('planner.leg.best')}</Text>}
                           </View>
                           <Text style={styles.optionMeta}>

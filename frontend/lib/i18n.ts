@@ -71,9 +71,20 @@ i18next
     returnEmptyString: false,
   });
 
+/** Keep <html lang> in step with the UI language. The static export bakes in
+ *  lang="en" (see app/+html.tsx), so without this a screen reader reads
+ *  Spanish, French or Chinese text with English pronunciation. */
+function applyDocumentLanguage(language: SupportedLanguage): void {
+  if (typeof document === 'undefined') return;
+  document.documentElement.lang = language;
+}
+
+applyDocumentLanguage(initialLanguage);
+
 export function changeLanguage(language: SupportedLanguage): void {
   i18next.changeLanguage(language);
   persistLanguageLocally(language);
+  applyDocumentLanguage(language);
 }
 
 export default i18next;
