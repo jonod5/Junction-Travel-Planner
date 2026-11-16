@@ -17,10 +17,10 @@ import {
   Text,
   type StyleProp,
   type TextStyle,
-  useWindowDimensions,
   View,
   type ViewStyle,
 } from 'react-native';
+import { useWindowDimensions } from '@/lib/useWindowDimensions';
 
 const NATIVE = Platform.OS !== 'web';
 const EASE_OUT = Easing.bezier(0.2, 0.7, 0.2, 1);

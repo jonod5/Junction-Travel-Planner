@@ -9,7 +9,7 @@ this file is for scope gaps: something the app doesn't do yet, and why.
 
 ## GTFS static coverage is LA Metro-only — 8 venues have no "nearest transit stop" data
 
-**Found:** 2026-09-28, registering the 27 new LA28 venues (v1.7 registry phase).
+**Found:** 2026-09-28, registering the 27 new venues (v1.7 registry phase).
 
 `app/ingest/gtfs_static.py` only ingests LA Metro's own GTFS static feed.
 `app/services/venue_enrichment.py`'s Tier-1 "nearest transit stop" enrichment

@@ -1,6 +1,6 @@
 // Learn-more content (features, transport modes, companion apps) shown on
 // the landing page below the hero. Cards reveal as they scroll into view.
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@/components/Icons';
 import React from 'react';
 import {
   Image,

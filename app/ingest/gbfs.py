@@ -49,7 +49,11 @@ ATTRIBUTION = (
 # Default type is a fallback for feeds that don't publish vehicle_types.json.
 _DEFAULT_PROVIDERS: dict[str, tuple[str, str, str]] = {
     "bird": ("Bird", "https://mds.bird.co/gbfs/v2/public/los-angeles/gbfs.json", "scooter"),
-    "spin": ("Spin", "https://gbfs.spin.pm/api/gbfs/v2_3/los_angeles/gbfs.json", "scooter"),
+    # Spin's feeds moved to Bird's domain (Bird owns Spin); the old
+    # gbfs.spin.pm/api/gbfs/... paths return 404. Address from the public
+    # MobilityData GBFS catalog (systems.csv, "Spin Los Angeles"). The feed is
+    # valid but can legitimately list zero vehicles when Spin has no fleet out.
+    "spin": ("Spin", "https://mds.bird.co/gbfs/v2/public/provider/spin/los_angeles/gbfs.json", "scooter"),
     "metro-bike-share": ("Metro Bike Share", "https://gbfs.bcycle.com/bcycle_lametro/gbfs.json", "bike"),
 }
 

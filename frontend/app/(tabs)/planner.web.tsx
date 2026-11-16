@@ -9,7 +9,7 @@
 // screen renders the SELECTED ranked option's legs, not a manually-fetched
 // single Directions result. Native keeps its existing separate Builder/Map/
 // Routes/Comparison screens unchanged (see (tabs)/index.tsx, map.tsx).
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +18,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
+import { useWindowDimensions } from '@/lib/useWindowDimensions';
 
 import { BottomSheet, type SheetSnap } from '@/components/BottomSheet';
 import { DeepLinkButtons } from '@/components/DeepLinkButtons';
@@ -118,6 +118,12 @@ const MODE_COLORS: Record<string, string> = {
 };
 function modeShortLabel(mode: string): string {
   return i18next.t(`modes.shortLabel.${mode}`, { defaultValue: mode });
+}
+/** A route option's name in the UI language, built from its modes — the
+ *  backend's `label` is always English ("Scooter → Transit"). Same format and
+ *  order as route_engine._label. */
+function optionLabel(opt: { modes: string[] }): string {
+  return opt.modes.map(modeShortLabel).join(' → ');
 }
 
 interface RenderStep extends DirectionStep {
@@ -1120,7 +1126,7 @@ export default function UnifiedPlannerScreen() {
                           style={[styles.optionCard, active && styles.optionCardActive]}
                         >
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                            <Text style={[styles.optionLabel, active && styles.optionLabelActive]} numberOfLines={1}>{opt.label}</Text>
+                            <Text style={[styles.optionLabel, active && styles.optionLabelActive]} numberOfLines={1}>{optionLabel(opt)}</Text>
                             {idx === 0 && <Text style={styles.bestBadge}>{t('planner.leg.best')}</Text>}
                           </View>
                           <Text style={styles.optionMeta}>

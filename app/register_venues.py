@@ -1,5 +1,5 @@
 """
-CLI to register new LA28 venues (geocode + minimal row) using the existing
+CLI to register new Games venues (geocode + minimal row) using the existing
 v1.7 pipeline's registry model — see app/models/venue.py's "Registry"
 section and app/services/geocode.py.
 
@@ -50,8 +50,8 @@ from app.services.geocode import GeocodeError, geocode_address
 # created; re-running registration skips an existing venue entirely, so it
 # never flips a hidden venue back to visible (or the reverse).
 #
-# LA28 venues (Greater LA region; football + OKC excluded; existing 6
-# excluded) — per the LA28 Games Map, which is subject to change; noted in
+# Games venues (Greater LA region; football + OKC excluded; existing 6
+# excluded) — per the official Games venue map, which is subject to change; noted in
 # each row's data_sources_summary.
 #
 # geocode_query is hand-tuned per venue rather than a mechanical
@@ -68,7 +68,7 @@ VENUES: list[dict] = [
     # same physical structure as the existing hand-collected LA Memorial
     # Coliseum (venue id 1). Deliberately not registered here at all: the
     # Coliseum is one of the 6 hand-collected venues and this script must
-    # never create a second row for it, even under a different LA28 event
+    # never create a second row for it, even under a different Games event
     # name.
     dict(external_ref="galen-center", name="Galen Center", zone="Exposition Park",
          sport_use="Badminton, Rhythmic Gymnastics",
@@ -147,7 +147,7 @@ VENUES: list[dict] = [
 # Below this radius, treat a match as "probably the same physical venue."
 DEDUPE_RADIUS_M = 150
 
-DATA_SOURCE_NOTE = "LA28 Games Map venue list (subject to change) — see Claude Code Prompt, v1.7 registry phase"
+DATA_SOURCE_NOTE = "Games venue map list (subject to change) — see Claude Code Prompt, v1.7 registry phase"
 
 
 def _normalize_name(name: str) -> str:
@@ -263,9 +263,9 @@ def register_venue(db: Session, spec: dict) -> RegistrationOutcome:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Register new LA28 venues (geocode + minimal row).")
+    parser = argparse.ArgumentParser(description="Register new Games venues (geocode + minimal row).")
     parser.add_argument("refs", nargs="*", help="external_ref slug(s) to register")
-    parser.add_argument("--all", action="store_true", help="Register every venue in the LA28 list")
+    parser.add_argument("--all", action="store_true", help="Register every venue in the Games list")
     args = parser.parse_args()
     if not args.all and not args.refs:
         parser.error("pass one or more external_ref slugs, or --all")

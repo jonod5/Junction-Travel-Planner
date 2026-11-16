@@ -1,6 +1,6 @@
 // Landing screen (the app's entry route): what Junction is, entry points to
 // the planner and the SP survey, and the learn-more content below.
-import { Feather } from '@expo/vector-icons';
+import { Feather } from '@/components/Icons';
 import { useRouter, type Href } from 'expo-router';
 import React, { useRef } from 'react';
 import {
@@ -11,9 +11,9 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  useWindowDimensions,
   View,
 } from 'react-native';
+import { useWindowDimensions } from '@/lib/useWindowDimensions';
 
 import { BrandHeader, CONTENT_MAX_WIDTH } from '@/components/BrandHeader';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';

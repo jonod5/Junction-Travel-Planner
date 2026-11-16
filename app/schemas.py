@@ -206,7 +206,7 @@ class VenueListItemOut(BaseModel):
 
 
 class GamesTimeOfficialOut(BaseModel):
-    """Tier-3 scaffold — every field is null until LA28 publishes official
+    """Tier-3 scaffold — every field is null until the Games publish official
     data; `source` stays "official_pending" until then. See
     GamesTimeOfficial's docstring in app/models/venue.py."""
     model_config = ConfigDict(from_attributes=True)

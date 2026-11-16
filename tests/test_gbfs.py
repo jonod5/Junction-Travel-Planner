@@ -198,3 +198,12 @@ def test_cache_stores_json_serialisable(one_provider):
     # Everything cached must round-trip through json.
     for val in fake.store.values():
         assert json.loads(val) is not None
+
+
+def test_default_provider_roots_are_the_current_working_addresses():
+    # Audit OPS-01: Spin's old gbfs.spin.pm/api/gbfs/... root returns 404 now
+    # that its feeds live on Bird's domain. Guards against pointing back at it.
+    roots = {key: url for key, (_name, url, _type) in gbfs.providers().items()}
+    assert "gbfs.spin.pm" not in roots["spin"]
+    assert roots["spin"].endswith("/provider/spin/los_angeles/gbfs.json")
+    assert set(roots) == {"bird", "spin", "metro-bike-share"}
