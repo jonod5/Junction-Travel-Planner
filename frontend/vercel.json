@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx expo export --platform web",
+  "buildCommand": "npx expo export --platform web && cp \"dist/+not-found.html\" dist/404.html",
   "outputDirectory": "dist",
   "framework": null,
   "cleanUrls": true,
@@ -7,10 +7,6 @@
     {
       "source": "/api/:path*",
       "destination": "https://junction-travel.up.railway.app/api/:path*"
-    },
-    {
-      "source": "/((?!api/|_expo/|assets/|favicon\\.).*)",
-      "destination": "/index.html"
     }
   ],
   "headers": [
