@@ -29,8 +29,9 @@ if config.config_file_name is not None:
 
 # Import every model module so their Table objects appear in Base.metadata.
 # Add new model files here as the schema grows.
-from app.db import Base  # noqa: E402
+from app.db import Base, normalize_database_url  # noqa: E402
 import app.models.venue  # noqa: F401, E402
+import app.models.trip   # noqa: F401, E402
 import app.models.gtfs   # noqa: F401, E402
 import app.models.user   # noqa: F401, E402
 import app.models.itinerary  # noqa: F401, E402
@@ -40,7 +41,9 @@ target_metadata = Base.metadata
 
 # Override the sqlalchemy.url from alembic.ini with the env var so no
 # credentials are ever stored in the ini file.
-DATABASE_URL = os.environ["DATABASE_URL"]
+# Same driver normalization as the app (see app.db.normalize_database_url) —
+# without it, Railway's plain postgresql:// URL fails here under SQLAlchemy 2.1+.
+DATABASE_URL = normalize_database_url(os.environ["DATABASE_URL"])
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 

@@ -5,9 +5,20 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 # DATABASE_URL must be set in the environment (via .env / docker-compose env_file).
 # Example: postgresql+psycopg2://junction:changeme@db:5432/junctiondb
-_raw_url = os.environ["DATABASE_URL"]
-# Railway injects postgresql:// but psycopg2 needs postgresql+psycopg2://
-DATABASE_URL = _raw_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+def normalize_database_url(url: str) -> str:
+    """Pin the Postgres driver to psycopg2, the one this project installs.
+
+    Railway injects "postgresql://", which SQLAlchemy resolves to a default
+    driver — psycopg2 up to 2.0, but psycopg (v3) from 2.1, which isn't
+    installed here. Everything that opens a connection (the app and
+    alembic/env.py) must go through this, or a SQLAlchemy upgrade silently
+    breaks whichever one doesn't. Other schemes (sqlite in tests,
+    postgresql+psycopg2 already) pass through unchanged.
+    """
+    return url.replace("postgresql://", "postgresql+psycopg2://", 1)
+
+
+DATABASE_URL = normalize_database_url(os.environ["DATABASE_URL"])
 
 # pool_pre_ping=True transparently reconnects stale connections; important
 # because the backend container can restart while Postgres is still healthy.
